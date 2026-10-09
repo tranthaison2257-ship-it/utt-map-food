@@ -1,0 +1,223 @@
+/* ==========================================================================
+   UTT FoodZone - Custom Stylesheet
+   Chủ đề: Ẩm thực sinh viên UTT Vĩnh Phúc (Vàng - Cam - Đỏ ấm áp)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+
+:root {
+  --primary-orange: #f97316;
+  --primary-red: #ef4444;
+  --primary-amber: #f59e0b;
+  --primary-dark: #1e293b;
+  --bg-cream: #fffdfa;
+}
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background-color: var(--bg-cream);
+  color: #1e293b;
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+/* Gradient Text Effect */
+.text-gradient {
+  background: linear-gradient(135deg, #ea580c 0%, #f59e0b 50%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-brand {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 60%, #dc2626 100%);
+}
+
+.bg-gradient-warm {
+  background: linear-gradient(180deg, #fff7ed 0%, #fffdfa 100%);
+}
+
+/* Star Rating (Interactive) */
+.star-rating-input .star-item {
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.star-rating-input .star-item:hover {
+  transform: scale(1.25);
+}
+.star-rating-input .star-item.active {
+  color: #f59e0b;
+}
+
+/* Card Hover Animation */
+.food-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.food-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(249, 115, 22, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+}
+
+/* Định dạng container Bản đồ */
+#map-container {
+  height: 480px;
+  min-height: 480px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 768px) {
+  #map-container {
+    height: 380px;
+    min-height: 380px;
+  }
+}
+
+#google-embed-container {
+  height: 480px;
+  min-height: 480px;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  #google-embed-container {
+    height: 380px;
+    min-height: 380px;
+  }
+}
+
+/* Custom Marker Pins */
+.custom-pin-school {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.55);
+  cursor: pointer;
+}
+
+.custom-pin-food {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #ffffff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.custom-pin-food:hover {
+  transform: scale(1.22);
+}
+
+/* Popup Leaflet Styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08) !important;
+  padding: 4px !important;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+.leaflet-popup-content {
+  margin: 8px 10px !important;
+  line-height: 1.4 !important;
+}
+.leaflet-container {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+}
+
+/* Custom Map Popup Content */
+.custom-map-popup {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  max-width: 250px;
+}
+.custom-map-popup img {
+  width: 100%;
+  height: 115px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.custom-map-popup h4 {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0f172a;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.custom-map-popup .price {
+  color: #ea580c;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.custom-map-popup .rating {
+  color: #f59e0b;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.custom-map-popup .popup-btn {
+  display: inline-block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  border: none;
+}
+.custom-map-popup .popup-btn:hover {
+  opacity: 0.92;
+}
+
+/* Modal Animations */
+.modal-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-out;
+}
+.modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  transform: scale(0.95) translateY(20px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-backdrop.show .modal-card {
+  transform: scale(1) translateY(0);
+}
+
+/* Category Pill Active State */
+.cat-pill.active {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  border-color: transparent;
+}
