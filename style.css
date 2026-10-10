@@ -221,3 +221,11 @@ body {
   box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
   border-color: transparent;
 }
+/* Đảm bảo khung bản đồ hiển thị rộng full và có chiều cao chuẩn */
+#map, .utt-map-view, div[id*="map"] {
+  width: 100% !important;
+  height: 500px !important; /* Hoặc chiều cao tùy chỉnh của bạn */
+  min-height: 400px;
+  display: block;
+  border-radius: 12px;
+}
