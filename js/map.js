@@ -42,6 +42,9 @@
   let schoolMarker = null;
   let userMarker = null;
   let currentPosition = null;
+  let locationRequestId = 0;
+  let locationRetryTimer = null;
+  let locationAttempt = 0;
   let activeBaseLayer = BASE_MAPS[DEFAULT_BASE_MAP]
     ? DEFAULT_BASE_MAP
     : Object.keys(BASE_MAPS)[0];
@@ -184,17 +187,38 @@
     markers.get(String(id))?.openPopup();
   }
 
-  function locateUser({ automatic = false } = {}) {
-    if (!navigator.geolocation) {
-      window.FoodZoneApp.showToast("Trình duyệt không hỗ trợ định vị GPS.", "error");
-      return;
-    }
+  function setLocationButtonState(isLocating) {
+    const button = document.getElementById("btn-locate-me");
+    if (!button) return;
 
-    if (!automatic) {
-      window.FoodZoneApp.showToast("Đang xác định vị trí của bạn...", "info");
+    const label = button.querySelector("span");
+    if (label) label.textContent = isLocating ? "Đang định vị..." : "Vị trí tôi";
+    button.setAttribute("aria-busy", String(isLocating));
+  }
+
+  function cancelLocationRequest() {
+    locationRequestId += 1;
+    if (locationRetryTimer !== null) {
+      window.clearTimeout(locationRetryTimer);
+      locationRetryTimer = null;
     }
+    locationAttempt = 0;
+    setLocationButtonState(false);
+  }
+
+  function requestUserLocation(requestId, automatic) {
+    if (requestId !== locationRequestId) return;
+
+    const useHighAccuracy = locationAttempt % 2 === 1;
+    const timeout = Math.min(60000 + Math.floor(locationAttempt / 2) * 30000, 120000);
+    locationAttempt += 1;
+
     navigator.geolocation.getCurrentPosition(
       position => {
+        if (requestId !== locationRequestId) return;
+        locationRetryTimer = null;
+        locationAttempt = 0;
+        setLocationButtonState(false);
         currentPosition = [position.coords.latitude, position.coords.longitude];
         if (userMarker) {
           userMarker.setLatLng(currentPosition);
@@ -224,14 +248,54 @@
         }, 0);
       },
       error => {
+        if (requestId !== locationRequestId) return;
         console.warn("Không thể lấy vị trí GPS:", error.message);
-        window.FoodZoneApp.showToast(
-          "Không lấy được vị trí. Hãy cấp quyền vị trí cho trang hoặc thử nút “Vị trí tôi”.",
-          "error"
+
+        if (error.code === 1) {
+          locationRetryTimer = null;
+          locationAttempt = 0;
+          setLocationButtonState(false);
+          window.FoodZoneApp.showToast(
+            "Trình duyệt chưa cấp quyền vị trí. Hãy cho phép Location trong cài đặt trang; website cần HTTPS hoặc localhost, sau đó thử lại.",
+            "error"
+          );
+          return;
+        }
+
+        const retryDelay = Math.min(1500 * 2 ** Math.min(locationAttempt - 1, 4), 20000);
+        setLocationButtonState(true);
+        if (locationAttempt === 1) {
+          window.FoodZoneApp.showToast(
+            "GPS chưa phản hồi; trang sẽ tiếp tục thử lại. Hãy giữ quyền vị trí được cho phép.",
+            "info"
+          );
+        }
+        locationRetryTimer = window.setTimeout(
+          () => requestUserLocation(requestId, automatic),
+          retryDelay
         );
       },
-      { enableHighAccuracy: false, maximumAge: 30000, timeout: 8000 }
+      {
+        enableHighAccuracy: useHighAccuracy,
+        maximumAge: locationAttempt > 1 ? 120000 : 0,
+        timeout
+      }
     );
+  }
+
+  function locateUser({ automatic = false } = {}) {
+    if (!navigator.geolocation) {
+      window.FoodZoneApp.showToast("Trình duyệt không hỗ trợ định vị GPS.", "error");
+      return;
+    }
+
+    cancelLocationRequest();
+    const requestId = locationRequestId;
+    setLocationButtonState(true);
+    if (!automatic) {
+      window.FoodZoneApp.showToast("Đang xác định vị trí của bạn...", "info");
+    }
+    requestUserLocation(requestId, automatic);
   }
 
   function switchMode(mode) {

@@ -57,4 +57,4 @@ Mở `js/map.js` và tìm `BASE_MAPS` ở gần đầu file. Mỗi mục có:
 
 Khi thêm quán, sửa mảng `INITIAL_RESTAURANTS` trong `js/data.js`; nhập `lat` (vĩ độ) và `lng` (kinh độ) chính xác. Các file JavaScript thường được nạp theo thứ tự `data.js` → `map.js` → `app.js`.
 
-Trang tự gọi định vị khi mở. Trình duyệt sẽ hỏi quyền nếu chưa có lựa chọn trước đó; nếu quyền đã được cấp thì vị trí lấy tự động mà không hỏi lại. Khi có tọa độ, bản đồ chuyển ngay đến vị trí đó; khoảng cách và danh sách được cập nhật ngay sau. GPS yêu cầu HTTPS hoặc localhost và cần người dùng cho phép.
+Trang tự gọi định vị khi mở. Nếu GPS lần đầu phản hồi chậm hoặc lỗi tín hiệu tạm thời, trang tiếp tục thử lại với thời gian chờ dài hơn và đổi chế độ chính xác; khi nhận được tọa độ, bản đồ và khoảng cách quán sẽ tự cập nhật. GPS yêu cầu HTTPS hoặc localhost và người dùng phải cho phép quyền vị trí; nếu quyền bị chặn, hãy bật lại trong cài đặt trang của trình duyệt rồi bấm “Vị trí tôi”.
