@@ -1,0 +1,66 @@
+name: Đề xuất quán ăn
+description: Gửi thông tin quán quanh UTT để nhóm quản trị kiểm tra
+title: "[Đề xuất quán] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cảm ơn bạn đã đóng góp! Nhóm quản trị sẽ kiểm tra thông tin trước khi thêm quán lên website.
+        Vui lòng không gửi thông tin cá nhân nhạy cảm.
+  - type: input
+    id: restaurant-name
+    attributes:
+      label: Tên quán
+      placeholder: Ví dụ: Quán cơm ...
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Danh mục
+      options:
+        - Cơm & món chính
+        - Bún - Phở
+        - Ăn vặt & lẩu nướng
+        - Trà sữa & cafe
+    validations:
+      required: true
+  - type: input
+    id: address
+    attributes:
+      label: Địa chỉ cụ thể
+      placeholder: Số nhà, tên đường, phường/xã
+    validations:
+      required: true
+  - type: input
+    id: map-link
+    attributes:
+      label: Link Google Maps hoặc tọa độ
+      description: Giúp nhóm quản trị xác định vị trí chính xác.
+      placeholder: https://maps.google.com/... hoặc vĩ độ, kinh độ
+    validations:
+      required: true
+  - type: input
+    id: price-range
+    attributes:
+      label: Khoảng giá tham khảo
+      placeholder: Ví dụ: 20.000đ - 40.000đ
+    validations:
+      required: true
+  - type: textarea
+    id: dishes
+    attributes:
+      label: Món nổi bật
+      description: Mỗi dòng ghi một món (nếu biết).
+      placeholder: |-
+        Món nổi bật 1
+        Món nổi bật 2
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Nguồn xác minh hoặc ghi chú
+      description: Có thể cung cấp link, thời gian mở cửa hoặc thông tin giúp xác minh quán.
+    validations:
+      required: false

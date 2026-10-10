@@ -198,7 +198,7 @@
         </div>
 
         <!-- Hướng dẫn chú giải góc bản đồ -->
-        <div class="absolute bottom-3 left-3 z-[1000] bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border border-slate-200 text-[11px] space-y-1">
+        <div class="absolute bottom-3 left-3 z-[20] bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-md border border-slate-200 text-[11px] space-y-1">
           <div class="flex items-center gap-2 font-medium text-slate-700">
             <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
             <span>ĐH Công nghệ GTVT Vĩnh Phúc</span>
@@ -257,16 +257,35 @@
       <!-- Pill Categories -->
       <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 overflow-hidden">
         <div id="category-pills" class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full no-scrollbar"></div>
+        <div class="flex shrink-0 items-center gap-2">
+          <button id="btn-show-saved" type="button" aria-pressed="false"
+            class="saved-filter-button" title="Chỉ hiển thị quán đã lưu">
+            <i class="fa-regular fa-heart" aria-hidden="true"></i>
+            <span>Đã lưu</span>
+            <span id="saved-count" class="saved-count">0</span>
+          </button>
+          <button id="btn-random-restaurant" type="button" class="random-restaurant-button" aria-haspopup="dialog">
+            <i class="fa-solid fa-shuffle" aria-hidden="true"></i>
+            <span>Ăn gì?</span>
+          </button>
+        </div>
       </div>
 
     </div>
 
     <!-- Số lượng kết quả -->
-    <div class="mt-4 flex items-center justify-between text-xs text-slate-500 font-medium px-2">
+    <div class="mt-4 flex flex-col items-start gap-2 text-xs text-slate-500 font-medium px-2 sm:flex-row sm:items-center sm:justify-between">
       <span id="result-count">Đang tải danh sách quán...</span>
-      <button type="button" data-action="reset-filters" class="text-orange-600 font-semibold cursor-pointer hover:underline">
-        <i class="fa-solid fa-rotate-right mr-1"></i> Đặt lại bộ lọc
-      </button>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/tranthaison2257-ship-it/utt-map-food/issues/new?template=suggest-restaurant.yml"
+          target="_blank" rel="noopener noreferrer"
+          class="text-emerald-700 font-semibold hover:underline">
+          <i class="fa-solid fa-circle-plus mr-1"></i> Gửi quán mới
+        </a>
+        <button type="button" data-action="reset-filters" class="text-orange-600 font-semibold cursor-pointer hover:underline">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Đặt lại bộ lọc
+        </button>
+      </div>
     </div>
   </section>
 
@@ -329,6 +348,38 @@
     </section>
   </div>
 
+  <div id="random-modal" class="random-modal hidden" aria-hidden="true">
+    <section class="random-dialog" role="dialog" aria-modal="true" aria-labelledby="random-title">
+      <button id="btn-close-random" class="share-close" type="button" aria-label="Đóng">×</button>
+      <div class="random-heading">
+        <span class="random-heading-icon"><i class="fa-solid fa-dice"></i></span>
+        <div>
+          <h2 id="random-title">Hôm nay ăn gì?</h2>
+          <p>Để FoodZone chọn một quán trong danh sách phù hợp với bộ lọc của bạn.</p>
+        </div>
+      </div>
+      <div id="random-result" class="random-result" aria-live="polite">
+        <div id="random-emoji" class="random-emoji" aria-hidden="true">🍜</div>
+        <h3 id="random-name">Sẵn sàng chưa?</h3>
+        <p id="random-category" class="random-category">Nhấn nút bên dưới để bắt đầu.</p>
+        <p id="random-price" class="random-price"></p>
+        <p id="random-address" class="random-address"></p>
+      </div>
+      <div class="random-actions">
+        <button id="btn-spin-random" type="button" class="random-spin-button">
+          <i class="fa-solid fa-shuffle" aria-hidden="true"></i> Quay ngẫu nhiên
+        </button>
+        <button id="btn-random-show-map" type="button" data-action="show-map" class="share-action share-action-secondary hidden">
+          <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Xem trên bản đồ
+        </button>
+        <button id="btn-random-show-card" type="button" data-action="show-card" class="share-action share-action-secondary hidden">
+          <i class="fa-solid fa-list" aria-hidden="true"></i> Xem trong danh sách
+        </button>
+      </div>
+      <p id="random-status" class="random-status" role="status"></p>
+    </section>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- 7. TOAST NOTIFICATION -->
   <!-- ========================================================================= -->
@@ -336,6 +387,42 @@
     <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
     <span id="toast-message">Đã cập nhật dữ liệu thành công!</span>
   </div>
+
+  <button id="chat-toggle" type="button" class="chat-toggle" aria-label="Mở trợ lý UTT FoodZone"
+    aria-controls="chat-window" aria-expanded="false">
+    <i class="fa-solid fa-robot" aria-hidden="true"></i>
+    <span class="chat-toggle-indicator" aria-hidden="true"></span>
+  </button>
+
+  <section id="chat-window" class="chat-window hidden" aria-label="Trợ lý UTT FoodZone">
+    <header class="chat-header">
+      <div class="chat-avatar"><i class="fa-solid fa-robot" aria-hidden="true"></i></div>
+      <div class="chat-header-copy">
+        <strong>UTT FoodZone</strong>
+        <span><i class="chat-online-dot" aria-hidden="true"></i> Trợ lý thông tin quán</span>
+      </div>
+      <button id="btn-close-chat" type="button" class="chat-close" aria-label="Đóng trò chuyện">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+    <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="chat-composer">
+      <div class="chat-shortcuts" aria-label="Câu hỏi gợi ý">
+        <button type="button" data-chat-prompt="Quán cơm">🍚 Quán cơm</button>
+        <button type="button" data-chat-prompt="Quán bún phở">🍜 Bún phở</button>
+        <button type="button" data-chat-prompt="Quán trà sữa">🧋 Trà sữa</button>
+        <button type="button" data-chat-prompt="Quán rẻ">💰 Quán rẻ</button>
+      </div>
+      <form id="chat-form" class="chat-form">
+        <input id="chat-input" type="text" maxlength="240" autocomplete="off"
+          placeholder="Hỏi về các quán quanh UTT..." aria-label="Tin nhắn của bạn">
+        <button type="submit" aria-label="Gửi tin nhắn">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+        </button>
+      </form>
+      <p class="chat-disclaimer">Trợ lý trả lời dựa trên dữ liệu quán hiện có trên website.</p>
+    </div>
+  </section>
 
   <!-- ========================================================================= -->
   <!-- 8. FOOTER -->

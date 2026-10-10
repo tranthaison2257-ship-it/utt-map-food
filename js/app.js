@@ -1,5 +1,6 @@
 (function () {
   const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
+  const SAVED_RESTAURANTS_KEY = "utt-foodzone-saved-restaurants";
   const { INITIAL_RESTAURANTS, UTT_LOCATION } = window.FoodZoneData;
   const NFC_URI_PREFIXES = [
     "", "http://www.", "https://www.", "http://", "https://", "tel:",
@@ -21,8 +22,12 @@
   let restaurants = INITIAL_RESTAURANTS.map(restaurant => ({ ...restaurant }));
   let activeCategory = "all";
   let searchQuery = "";
+  let savedRestaurantIds = new Set();
+  let showSavedRestaurantsOnly = false;
   let activeOrigin = [UTT_LOCATION.lat, UTT_LOCATION.lng];
   let nfcScanController = null;
+  let randomSpinTimer = null;
+  let selectedRandomRestaurant = null;
 
   function getNfcUrl(message) {
     for (const record of message.records) {
@@ -149,8 +154,10 @@
           priceFilter === "25-40" ? restaurant.minPrice >= 25000 && restaurant.minPrice <= 40000 :
             priceFilter === "above-40" ? restaurant.maxPrice > 40000 :
               true;
+      const matchesSaved =
+        !showSavedRestaurantsOnly || savedRestaurantIds.has(String(restaurant.id));
 
-      return matchesCategory && matchesSearch && matchesPrice;
+      return matchesCategory && matchesSearch && matchesPrice && matchesSaved;
     });
 
     filtered = filtered.map(restaurant => ({
@@ -186,7 +193,11 @@
         <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-300">
           <i class="fa-solid fa-face-frown-open text-5xl text-orange-400 mb-3"></i>
           <h3 class="text-xl font-bold text-slate-800">Không tìm thấy quán ăn phù hợp</h3>
-          <p class="mt-2 text-sm text-slate-500">Thử đổi từ khóa hoặc bộ lọc nhé.</p>
+          <p class="mt-2 text-sm text-slate-500">${
+            showSavedRestaurantsOnly && savedRestaurantIds.size === 0
+              ? "Bạn chưa lưu quán nào. Nhấn biểu tượng trái tim trên thẻ quán để lưu lại."
+              : "Thử đổi từ khóa hoặc bộ lọc nhé."
+          }</p>
         </div>
       `;
       return;
@@ -205,6 +216,13 @@
           <div class="absolute top-3 right-3 bg-orange-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
             ${escapeHtml(restaurant.categoryLabel)}
           </div>
+          <button type="button" data-action="toggle-saved" data-place-id="${escapeHtml(restaurant.id)}"
+            class="restaurant-save-button ${savedRestaurantIds.has(String(restaurant.id)) ? "is-saved" : ""}"
+            aria-label="${savedRestaurantIds.has(String(restaurant.id)) ? "Bỏ lưu" : "Lưu"} ${escapeHtml(restaurant.name)}"
+            aria-pressed="${savedRestaurantIds.has(String(restaurant.id))}"
+            title="${savedRestaurantIds.has(String(restaurant.id)) ? "Bỏ lưu quán" : "Lưu quán"}">
+            <i class="fa-${savedRestaurantIds.has(String(restaurant.id)) ? "solid" : "regular"} fa-heart" aria-hidden="true"></i>
+          </button>
         </div>
 
         <div class="p-5 flex-1 flex flex-col justify-between">
@@ -246,6 +264,273 @@
     const filtered = getFilteredRestaurants();
     renderRestaurantCards(filtered);
     window.FoodZoneMap.renderMarkers(filtered);
+  }
+
+  function loadSavedRestaurants() {
+    try {
+      const savedIds = JSON.parse(localStorage.getItem(SAVED_RESTAURANTS_KEY) ?? "[]");
+      if (!Array.isArray(savedIds)) {
+        throw new TypeError("Danh sách quán đã lưu không hợp lệ.");
+      }
+      const knownRestaurantIds = new Set(restaurants.map(restaurant => String(restaurant.id)));
+      savedRestaurantIds = new Set(
+        savedIds
+          .filter(id => typeof id === "string" || typeof id === "number")
+          .map(String)
+          .filter(id => knownRestaurantIds.has(id))
+      );
+    } catch (error) {
+      console.warn("Không thể đọc danh sách quán đã lưu:", error);
+      showToast("Không đọc được quán đã lưu trên trình duyệt.", "error");
+      savedRestaurantIds = new Set();
+    }
+    updateSavedRestaurantsButton();
+  }
+
+  function updateSavedRestaurantsButton() {
+    const button = document.getElementById("btn-show-saved");
+    const count = document.getElementById("saved-count");
+    if (button) {
+      button.setAttribute("aria-pressed", String(showSavedRestaurantsOnly));
+      button.classList.toggle("is-active", showSavedRestaurantsOnly);
+      const icon = button.querySelector("i");
+      if (icon) icon.className = `fa-${showSavedRestaurantsOnly ? "solid" : "regular"} fa-heart`;
+    }
+    if (count) count.textContent = String(savedRestaurantIds.size);
+  }
+
+  function toggleSavedRestaurant(id) {
+    const restaurant = restaurants.find(item => String(item.id) === String(id));
+    if (!restaurant) return;
+
+    const nextSavedIds = new Set(savedRestaurantIds);
+    if (nextSavedIds.has(String(id))) {
+      nextSavedIds.delete(String(id));
+    } else {
+      nextSavedIds.add(String(id));
+    }
+
+    try {
+      localStorage.setItem(SAVED_RESTAURANTS_KEY, JSON.stringify([...nextSavedIds]));
+    } catch (error) {
+      console.error("Không thể lưu danh sách quán vào trình duyệt:", error);
+      showToast("Không lưu được quán. Hãy kiểm tra dung lượng hoặc quyền lưu trữ.", "error");
+      return;
+    }
+
+    savedRestaurantIds = nextSavedIds;
+    updateSavedRestaurantsButton();
+    showToast(
+      savedRestaurantIds.has(String(id))
+        ? `Đã lưu ${restaurant.name}.`
+        : `Đã bỏ lưu ${restaurant.name}.`
+    );
+    applyFiltersAndRender();
+  }
+
+  function openRandomDialog() {
+    const modal = document.getElementById("random-modal");
+    if (!modal) return;
+
+    closeRandomDialog();
+    selectedRandomRestaurant = null;
+    document.getElementById("random-emoji").textContent = "🍜";
+    document.getElementById("random-name").textContent = "Sẵn sàng chưa?";
+    document.getElementById("random-category").textContent = "Nhấn nút bên dưới để bắt đầu.";
+    document.getElementById("random-price").textContent = "";
+    document.getElementById("random-address").textContent = "";
+    document.getElementById("random-status").textContent = "";
+    document.getElementById("btn-random-show-map").classList.add("hidden");
+    document.getElementById("btn-random-show-card").classList.add("hidden");
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.getElementById("btn-spin-random").focus();
+  }
+
+  function closeRandomDialog() {
+    if (randomSpinTimer !== null) {
+      window.clearInterval(randomSpinTimer);
+      randomSpinTimer = null;
+    }
+    const button = document.getElementById("btn-spin-random");
+    if (button) button.disabled = false;
+    const modal = document.getElementById("random-modal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function pickRandomRestaurant() {
+    const choices = getFilteredRestaurants();
+    if (choices.length === 0) {
+      document.getElementById("random-name").textContent = "Chưa có quán phù hợp";
+      document.getElementById("random-category").textContent =
+        "Hãy đổi bộ lọc hoặc tắt chế độ chỉ xem quán đã lưu rồi thử lại.";
+      document.getElementById("random-price").textContent = "";
+      document.getElementById("random-address").textContent = "";
+      document.getElementById("random-status").textContent = "Không tìm thấy quán để quay.";
+      return;
+    }
+
+    const result = document.getElementById("random-result");
+    const name = document.getElementById("random-name");
+    const category = document.getElementById("random-category");
+    const price = document.getElementById("random-price");
+    const address = document.getElementById("random-address");
+    const emoji = document.getElementById("random-emoji");
+    const spinButton = document.getElementById("btn-spin-random");
+    const chosen = choices[Math.floor(Math.random() * choices.length)];
+    const spinCount = 18;
+    let spin = 0;
+
+    if (randomSpinTimer !== null) window.clearInterval(randomSpinTimer);
+    selectedRandomRestaurant = null;
+    spinButton.disabled = true;
+    document.getElementById("random-status").textContent = "Đang chọn quán...";
+    emoji.textContent = "🍜";
+    document.getElementById("btn-random-show-map").classList.add("hidden");
+    document.getElementById("btn-random-show-card").classList.add("hidden");
+    result.classList.remove("random-pop");
+
+    randomSpinTimer = window.setInterval(() => {
+      const preview = choices[Math.floor(Math.random() * choices.length)];
+      name.textContent = preview.name;
+      category.textContent = preview.categoryLabel;
+      price.textContent = preview.priceRange;
+      address.textContent = preview.address;
+      spin += 1;
+
+      if (spin < spinCount) return;
+
+      window.clearInterval(randomSpinTimer);
+      randomSpinTimer = null;
+      selectedRandomRestaurant = chosen;
+      name.textContent = chosen.name;
+      category.textContent = chosen.categoryLabel;
+      price.textContent = chosen.priceRange;
+      address.textContent = chosen.address;
+      emoji.textContent = "😋";
+      document.getElementById("random-status").textContent = "Kèo hôm nay đây rồi!";
+      document.getElementById("btn-random-show-map").classList.remove("hidden");
+      document.getElementById("btn-random-show-card").classList.remove("hidden");
+      spinButton.disabled = false;
+      result.classList.add("random-pop");
+    }, 90);
+  }
+
+  function handleRandomDialogAction(event) {
+    if (!selectedRandomRestaurant) return;
+    const action = event.currentTarget.dataset.action;
+    const id = selectedRandomRestaurant.id;
+    closeRandomDialog();
+
+    if (action === "show-map") {
+      window.FoodZoneMap.switchMode("osm");
+      window.FoodZoneMap.focusRestaurant(id);
+      document.getElementById("map-section")?.scrollIntoView({ behavior: "smooth" });
+    } else if (action === "show-card") {
+      scrollToRestaurant(id);
+    }
+  }
+
+  function normalizeText(value) {
+    return String(value ?? "")
+      .toLocaleLowerCase("vi")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d");
+  }
+
+  function findChatCategory(message) {
+    if (/\b(com|com ga|com rang)\b/.test(message)) return "com";
+    if (/\b(bun|pho|bun pho|bun cha)\b/.test(message)) return "bun-pho";
+    if (/\b(an vat|xi(en|e)n|lau|nuong)\b/.test(message)) return "an-vat";
+    if (/\b(tra sua|tra chanh|cafe|ca phe|do uong)\b/.test(message)) return "tra-sua";
+    return null;
+  }
+
+  function getChatResponse(input) {
+    const message = normalizeText(input);
+    if (/\b(xin chao|chao ban|hello|hi)\b/.test(message)) {
+      return "Chào bạn! Mình có thể gợi ý quán ăn quanh UTT dựa trên danh sách đang có. Bạn muốn ăn món gì?";
+    }
+    if (/\b(random|hom nay an gi|an gi)\b/.test(message)) {
+      openRandomDialog();
+      return "Mình đã mở vòng quay chọn quán cho bạn. Nhấn “Quay ngẫu nhiên” nhé!";
+    }
+    if (/\b(cam on|thanks|thank)\b/.test(message)) {
+      return "Không có gì! Chúc bạn tìm được món ngon nhé.";
+    }
+
+    const category = findChatCategory(message);
+    let matches = restaurants.filter(restaurant => {
+      if (category) return restaurant.category === category;
+      if (/\b(re|gia|sinh vien|duoi|tiet kiem)\b/.test(message)) {
+        return restaurant.maxPrice <= 40000;
+      }
+      const searchableText = normalizeText([
+        restaurant.name,
+        restaurant.categoryLabel,
+        restaurant.address,
+        ...restaurant.signatureDishes
+      ].join(" "));
+      return searchableText.includes(message);
+    });
+
+    if (!category && matches.length === 0 && /\b(quan|gan|ut|truong|mon|an|uong)\b/.test(message)) {
+      matches = [...restaurants];
+    }
+    if (matches.length === 0) {
+      return "Mình chưa tìm thấy quán phù hợp trong dữ liệu hiện có. Bạn thử hỏi về cơm, bún-phở, ăn vặt, trà sữa hoặc cà phê nhé.";
+    }
+
+    matches = matches
+      .map(restaurant => ({
+        ...restaurant,
+        distance: calculateDistance(activeOrigin, [Number(restaurant.lat), Number(restaurant.lng)])
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3);
+    const suggestions = matches.map(restaurant =>
+      `• ${restaurant.name} — ${restaurant.priceRange}, ${formatDistance(restaurant.distance)}.`
+    ).join("\n");
+    return `${category ? "Các quán theo danh mục bạn hỏi" : "Một vài gợi ý trong dữ liệu hiện có"}:\n${suggestions}\nThông tin trên website có thể cần được xác minh/cập nhật thêm.`;
+  }
+
+  function appendChatMessage(sender, message) {
+    const container = document.getElementById("chat-messages");
+    if (!container) return;
+
+    const row = document.createElement("div");
+    row.className = `chat-message-row ${sender === "user" ? "is-user" : "is-assistant"}`;
+    const bubble = document.createElement("p");
+    bubble.className = "chat-message-bubble";
+    bubble.textContent = message;
+    row.append(bubble);
+    container.append(row);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function sendChatMessage(message = document.getElementById("chat-input")?.value ?? "") {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
+
+    appendChatMessage("user", trimmedMessage);
+    const input = document.getElementById("chat-input");
+    if (input) input.value = "";
+    window.setTimeout(() => appendChatMessage("assistant", getChatResponse(trimmedMessage)), 300);
+  }
+
+  function toggleChat(forceOpen) {
+    const chat = document.getElementById("chat-window");
+    const button = document.getElementById("chat-toggle");
+    if (!chat || !button) return;
+
+    const shouldOpen = forceOpen ?? chat.classList.contains("hidden");
+    chat.classList.toggle("hidden", !shouldOpen);
+    button.setAttribute("aria-expanded", String(shouldOpen));
+    button.setAttribute("aria-label", shouldOpen ? "Đóng trợ lý UTT FoodZone" : "Mở trợ lý UTT FoodZone");
+    if (shouldOpen) document.getElementById("chat-input")?.focus();
   }
 
   function openDirections(id) {
@@ -343,6 +628,7 @@
 
   function initialize() {
     window.FoodZoneMap.initialize();
+    loadSavedRestaurants();
     renderCategoryPills();
     applyFiltersAndRender();
 
@@ -367,16 +653,49 @@
         window.FoodZoneMap.focusRestaurant(button.dataset.placeId);
       } else if (button.dataset.action === "directions") {
         openDirections(button.dataset.placeId);
+      } else if (button.dataset.action === "toggle-saved") {
+        toggleSavedRestaurant(button.dataset.placeId);
       }
     });
+    document.getElementById("btn-show-saved")?.addEventListener("click", () => {
+      showSavedRestaurantsOnly = !showSavedRestaurantsOnly;
+      updateSavedRestaurantsButton();
+      applyFiltersAndRender();
+    });
+    document.getElementById("btn-random-restaurant")?.addEventListener("click", openRandomDialog);
+    document.getElementById("btn-close-random")?.addEventListener("click", closeRandomDialog);
+    document.getElementById("random-modal")?.addEventListener("click", event => {
+      if (event.target.id === "random-modal") closeRandomDialog();
+    });
+    document.getElementById("btn-spin-random")?.addEventListener("click", pickRandomRestaurant);
+    document.getElementById("btn-random-show-map")?.addEventListener("click", handleRandomDialogAction);
+    document.getElementById("btn-random-show-card")?.addEventListener("click", handleRandomDialogAction);
     document.getElementById("btn-share-link")?.addEventListener("click", openShareDialog);
     document.getElementById("btn-close-share")?.addEventListener("click", closeShareDialog);
     document.getElementById("share-modal")?.addEventListener("click", event => {
       if (event.target.id === "share-modal") closeShareDialog();
     });
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeShareDialog();
+      if (event.key === "Escape") {
+        closeShareDialog();
+        closeRandomDialog();
+        toggleChat(false);
+      }
     });
+    document.getElementById("chat-toggle")?.addEventListener("click", () => toggleChat());
+    document.getElementById("btn-close-chat")?.addEventListener("click", () => toggleChat(false));
+    document.getElementById("chat-form")?.addEventListener("submit", event => {
+      event.preventDefault();
+      sendChatMessage();
+    });
+    document.querySelector(".chat-shortcuts")?.addEventListener("click", event => {
+      const prompt = event.target.closest("[data-chat-prompt]");
+      if (prompt) sendChatMessage(prompt.dataset.chatPrompt);
+    });
+    appendChatMessage(
+      "assistant",
+      "Xin chào! Mình là trợ lý UTT FoodZone. Mình có thể gợi ý quán từ dữ liệu hiện có quanh trường."
+    );
     document.getElementById("btn-copy-share-link")?.addEventListener("click", async () => {
       const url = document.getElementById("share-url")?.value;
       if (!url) return;
