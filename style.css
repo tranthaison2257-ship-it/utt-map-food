@@ -229,3 +229,13 @@ body {
   display: block;
   border-radius: 12px;
 }
+/* Cố định chiều cao và chiều rộng chuẩn cho khung bản đồ Leaflet */
+#map-container {
+  width: 100% !important;
+  height: 450px !important;
+  min-height: 450px !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 1;
+  border-radius: 12px;
+}

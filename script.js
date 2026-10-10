@@ -1,12 +1,10 @@
 /**
  * ==============================================================================
  * UTT FOODZONE - WEB APP ĐÁNH GIÁ QUÁN ĂN SINH VIÊN UTT VĨNH PHÚC
- * Tác giả: Full-stack Web Developer & UI/UX Designer
- * Phiên bản: 2.3 (Bản đồ tượng trưng & Tự động vẽ lộ trình từ trường UTT)
+ * Phiên bản: 3.1 (Fix lỗi tràn tên quán, tối ưu giao diện card & Thêm nhiều quán mới)
  * ==============================================================================
  */
 
-// Tọa độ và thông tin trung tâm: Cơ sở Trường Đại học Công nghệ Giao thông Vận tải (UTT) Vĩnh Phúc
 const UTT_LOCATION = {
   lat: 21.31254,
   lng: 105.58912,
@@ -14,7 +12,6 @@ const UTT_LOCATION = {
   address: "Phường Đồng Tâm, TP. Vĩnh Yên, Tỉnh Vĩnh Phúc"
 };
 
-// 1. MOCK DATA: DANH SÁCH CÁC QUÁN ĂN XUNG QUANH UTT VĨNH PHÚC
 const INITIAL_RESTAURANTS = [
   {
     id: 1,
@@ -25,28 +22,13 @@ const INITIAL_RESTAURANTS = [
     minPrice: 25000,
     maxPrice: 35000,
     distanceText: "150m từ cổng UTT",
-    distanceMeters: 150,
     address: "Số 18 Ngõ 2 Phố Lam Sơn, P. Đồng Tâm, TP. Vĩnh Yên",
     phone: "0982 345 678",
     openHours: "09:30 - 21:00",
     lat: 21.31340,
     lng: 105.58990,
     coverImage: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=800&q=80"
-    ],
-    signatureDishes: ["Cơm đùi gà xối mỡ da giòn", "Cơm rang dưa bò giòn rụm"],
-    reviews: [
-      {
-        id: 101,
-        userName: "Nguyễn Tuấn Anh (K73 - CNTT UTT)",
-        avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=tuananh",
-        rating: 5,
-        date: "2 ngày trước",
-        comment: "Đùi gà bự chảng, da giòn rụm chấm nước sốt mắm tỏi ớt siêu cuốn. Cơm rang hạt tơi không bị ngấy mỡ."
-      }
-    ]
+    signatureDishes: ["Cơm đùi gà xối mỡ da giòn", "Cơm rang dưa bò giòn rụm"]
   },
   {
     id: 2,
@@ -57,27 +39,13 @@ const INITIAL_RESTAURANTS = [
     minPrice: 30000,
     maxPrice: 40000,
     distanceText: "320m từ UTT",
-    distanceMeters: 320,
     address: "Số 45 Đường Lam Sơn, P. Đồng Tâm, TP. Vĩnh Yên",
     phone: "0971 889 221",
     openHours: "06:30 - 14:00",
     lat: 21.31420,
     lng: 105.58780,
     coverImage: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80"
-    ],
-    signatureDishes: ["Bún chả nướng than hoa", "Nem cua bể rán giòn rụm"],
-    reviews: [
-      {
-        id: 201,
-        userName: "Vũ Đình Trọng (K74 - Cầu Đường)",
-        avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=trongvu",
-        rating: 5,
-        date: "Hôm qua",
-        comment: "Thịt nướng than hoa thơm nức mũi. Nước mắm pha vừa miệng, nem rán giòn tan."
-      }
-    ]
+    signatureDishes: ["Bún chả nướng than hoa", "Nem cua bể rán giòn rụm"]
   },
   {
     id: 3,
@@ -88,27 +56,13 @@ const INITIAL_RESTAURANTS = [
     minPrice: 5000,
     maxPrice: 25000,
     distanceText: "80m (Ngay cạnh cổng chính UTT)",
-    distanceMeters: 80,
     address: "Cổng chính ĐH Công nghệ GTVT, P. Đồng Tâm, TP. Vĩnh Yên",
     phone: "0915 678 123",
     openHours: "14:30 - 22:30",
     lat: 21.31210,
     lng: 105.58970,
     coverImage: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80"
-    ],
-    signatureDishes: ["Xiên que nướng bơ tỏi (5k/xiên)", "Bánh tráng nướng mỡ hành"],
-    reviews: [
-      {
-        id: 301,
-        userName: "Phạm Thùy Linh (K74 - Kinh Tế)",
-        avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=thuylinh",
-        rating: 5,
-        date: "3 ngày trước",
-        comment: "Điểm tụ tập quen thuộc của hội bạn sau mỗi ca học chiều!"
-      }
-    ]
+    signatureDishes: ["Xiên que nướng bơ tỏi", "Bánh tráng nướng mỡ hành"]
   },
   {
     id: 4,
@@ -119,163 +73,146 @@ const INITIAL_RESTAURANTS = [
     minPrice: 15000,
     maxPrice: 30000,
     distanceText: "250m từ UTT",
-    distanceMeters: 250,
     address: "Số 68 Phố Trần Phú kéo dài, P. Đồng Tâm, TP. Vĩnh Yên",
     phone: "0963 124 555",
     openHours: "08:00 - 23:00",
     lat: 21.31150,
     lng: 105.58720,
     coverImage: "https://images.unsplash.com/photo-1558857563-b37cf5a894f5?auto=format&fit=crop&w=800&q=80",
-    gallery: [
-      "https://images.unsplash.com/photo-1558857563-b37cf5a894f5?auto=format&fit=crop&w=800&q=80"
-    ],
-    signatureDishes: ["Trà chanh giã tay tươi mát", "Trà sữa nướng trân châu hoàng kim"],
-    reviews: [
-      {
-        id: 401,
-        userName: "Dương Quỳnh Trang (K73 - Ngôn Ngữ)",
-        avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=quinhtrang",
-        rating: 5,
-        date: "Hôm nay",
-        comment: "Không gian có điều hòa mát rượi, wifi mạnh mang laptop ra chạy deadline."
-      }
-    ]
+    signatureDishes: ["Trà chanh giã tay", "Trà sữa nướng trân châu"]
+  },
+  // --- BỔ SUNG CÁC QUÁN ĂN MỚI XUNG QUANH UTT VĨNH PHÚC ---
+  {
+    id: 5,
+    name: "Bánh Mì Chảo & Sốt Vang Sinh Viên",
+    category: "com",
+    categoryLabel: "Ăn sáng & Nhanh",
+    priceRange: "20.000đ - 35.000đ",
+    minPrice: 20000,
+    maxPrice: 35000,
+    distanceText: "200m từ UTT",
+    address: "Đường Lam Sơn, P. Đồng Tâm, TP. Vĩnh Yên",
+    phone: "0981 123 456",
+    openHours: "06:00 - 12:30",
+    lat: 21.31300,
+    lng: 105.58850,
+    coverImage: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80",
+    signatureDishes: ["Bánh mì chảo đầy đủ", "Bánh mì sốt vang đậm đà"]
+  },
+  {
+    id: 6,
+    name: "Lẩu Nướng Tự Chọn 99k Đồng Tâm",
+    category: "an-vat",
+    categoryLabel: "Lẩu & Nướng",
+    priceRange: "80.000đ - 150.000đ",
+    minPrice: 80000,
+    maxPrice: 150000,
+    distanceText: "450m từ UTT",
+    address: "Khu đô thị Đồng Tâm, TP. Vĩnh Yên",
+    phone: "0978 999 888",
+    openHours: "16:00 - 23:30",
+    lat: 21.31050,
+    lng: 105.59120,
+    coverImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    signatureDishes: ["Lẩu Thái chua cay", "Ba chỉ bò mỹ nướng sốt BBQ"]
+  },
+  {
+    id: 7,
+    name: "Bún Đậu Mắm Tôm Mộc Quán",
+    category: "bun-pho",
+    categoryLabel: "Bún - Phở - Mì",
+    priceRange: "25.000đ - 45.000đ",
+    minPrice: 25000,
+    maxPrice: 45000,
+    distanceText: "300m từ UTT",
+    address: "Số 12 Phố Chùa Hà, P. Đồng Tâm, TP. Vĩnh Yên",
+    phone: "0934 567 890",
+    openHours: "10:00 - 21:00",
+    lat: 21.31480,
+    lng: 105.58650,
+    coverImage: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+    signatureDishes: ["Mẹ bún đậu tá lả", "Chả cốm chiên giòn"]
+  },
+  {
+    id: 8,
+    name: "Mì Cay Seoul 7 Cấp Độ Vĩnh Yên",
+    category: "com",
+    categoryLabel: "Món Hàn Quốc",
+    priceRange: "35.000đ - 55.000đ",
+    minPrice: 35000,
+    maxPrice: 55000,
+    distanceText: "500m từ UTT",
+    address: "Đường Hùng Vương, P. Đồng Tâm, TP. Vĩnh Yên",
+    phone: "0912 345 678",
+    openHours: "09:00 - 22:00",
+    lat: 21.31520,
+    lng: 105.59200,
+    coverImage: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80",
+    signatureDishes: ["Mì cay hải sản", "Kimbap chiên xù"]
+  },
+  {
+    id: 9,
+    name: "Phở Bò Gia Truyền Nam Định",
+    category: "bun-pho",
+    categoryLabel: "Bún - Phở - Mì",
+    priceRange: "30.000đ - 45.000đ",
+    minPrice: 30000,
+    maxPrice: 45000,
+    distanceText: "180m từ UTT",
+    address: "Gần cổng phụ UTT Vĩnh Phúc, P. Đồng Tâm",
+    phone: "0965 432 109",
+    openHours: "06:00 - 13:00",
+    lat: 21.31290,
+    lng: 105.58950,
+    coverImage: "https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?auto=format&fit=crop&w=800&q=80",
+    signatureDishes: ["Phở tái nạm gầu", "Phở bò sốt vang"]
   }
 ];
 
-// 2. STATE ỨNG DỤNG
 let restaurants = [];
 let activeCategory = "all";
 let searchQuery = "";
-let leafletMap = null;
-let mapMarkers = [];
 
-// 3. KHỞI CHẠY KHI TẢI XONG TRANG
 document.addEventListener("DOMContentLoaded", () => {
-  loadDataFromStorage();
+  restaurants = JSON.parse(JSON.stringify(INITIAL_RESTAURANTS));
+  initGoogleMapEmbed();
   initEventListeners();
   renderCategoryPills();
-  applyFiltersAndRender();
-  
-  setTimeout(() => {
-    initInteractiveLeafletMap();
-  }, 100);
+  renderRestaurantCards(restaurants);
 });
 
-function loadDataFromStorage() {
-  const saved = localStorage.getItem("utt_foodzone_restaurants_data");
-  if (saved) {
-    try {
-      restaurants = JSON.parse(saved);
-    } catch (e) {
-      restaurants = JSON.parse(JSON.stringify(INITIAL_RESTAURANTS));
-    }
-  } else {
-    restaurants = JSON.parse(JSON.stringify(INITIAL_RESTAURANTS));
-    saveDataToStorage();
-  }
-}
-
-function saveDataToStorage() {
-  localStorage.setItem("utt_foodzone_restaurants_data", JSON.stringify(restaurants));
-}
-
-function calculateAverageRating(restaurant) {
-  if (!restaurant.reviews || restaurant.reviews.length === 0) return 5.0;
-  const total = restaurant.reviews.reduce((sum, rev) => sum + rev.rating, 0);
-  return (total / restaurant.reviews.length).toFixed(1);
-}
-
-/**
- * HÀM XỬ LÝ CHUYỂN SANG GOOGLE MAPS VẼ ĐƯỜNG ĐI TỪ TRƯỜNG UTT ĐẾN QUÁN ĂN
- */
-function openGoogleMaps(lat, lng, name) {
-  // Điểm xuất phát cố định: Trường ĐH Công nghệ GTVT cơ sở Vĩnh Phúc
-  const origin = encodeURIComponent("ĐH Công nghệ Giao thông Vận tải cơ sở Vĩnh Phúc, Đồng Tâm, Vĩnh Yên");
-  // Điểm đến: Tên quán + Tọa độ để định vị chính xác
-  const destination = encodeURIComponent(`${name}, Vĩnh Yên, Vĩnh Phúc`);
-  
-  // URL mở tính năng Chỉ Đường (Directions) của Google Maps
-  const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&destination_place_id=&travelmode=driving`;
-  
-  window.open(googleMapsDirectionsUrl, "_blank");
-}
-
-// 4. BẢN ĐỒ TƯƠNG TÁC TƯỢNG TRƯNG
-function initInteractiveLeafletMap() {
+function initGoogleMapEmbed() {
   const container = document.getElementById("map-container");
   if (!container) return;
 
-  if (typeof L === "undefined") {
-    setTimeout(initInteractiveLeafletMap, 300);
-    return;
-  }
-
-  if (leafletMap) {
-    leafletMap.remove();
-    leafletMap = null;
-  }
-
-  try {
-    leafletMap = L.map("map-container", {
-      center: [UTT_LOCATION.lat, UTT_LOCATION.lng],
-      zoom: 16,
-      zoomControl: true,
-      scrollWheelZoom: false
-    });
-
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-      maxZoom: 19,
-      attribution: 'Tiles &copy; Esri &mdash; UTT Vĩnh Phúc'
-    }).addTo(leafletMap);
-
-    // Ghim vị trí Trường UTT Vĩnh Phúc
-    const schoolPinIcon = L.divIcon({
-      className: "custom-pin-school-wrapper",
-      html: `<div style="background:#2563eb; color:white; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3); border:2px solid white;"><i class="fa-solid fa-graduation-cap"></i></div>`,
-      iconSize: [38, 38],
-      iconAnchor: [19, 19]
-    });
-    L.marker([UTT_LOCATION.lat, UTT_LOCATION.lng], { icon: schoolPinIcon })
-      .addTo(leafletMap)
-      .bindPopup(`<b>${UTT_LOCATION.name}</b><br><small>${UTT_LOCATION.address}</small>`);
-
-    // Ghim vị trí các quán ăn
-    restaurants.forEach(rest => {
-      const foodPinIcon = L.divIcon({
-        className: "custom-pin-food-wrapper",
-        html: `<div style="background:#f97316; color:white; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.3); border:2px solid white;" title="${rest.name}"><i class="fa-solid fa-utensils text-xs"></i></div>`,
-        iconSize: [34, 34],
-        iconAnchor: [17, 17]
-      });
-
-      const marker = L.marker([rest.lat, rest.lng], { icon: foodPinIcon }).addTo(leafletMap);
-      
-      // Khi bấm vào ghim quán trên bản đồ -> Mở chỉ đường từ trường đến quán
-      marker.on("click", () => {
-        openGoogleMaps(rest.lat, rest.lng, rest.name);
-      });
-
-      mapMarkers.push(marker);
-    });
-
-    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
-
-  } catch (err) {
-    console.error("Lỗi khởi tạo bản đồ:", err);
-  }
+  container.innerHTML = `
+    <iframe 
+      width="100%" 
+      height="450" 
+      style="border:0; border-radius: 12px; display:block;" 
+      loading="lazy" 
+      allowfullscreen 
+      src="https://maps.google.com/maps?q=${UTT_LOCATION.lat},${UTT_LOCATION.lng}&z=16&output=embed">
+    </iframe>
+  `;
 }
 
-// 5. RENDER CARDS VÀ BỘ LỌC
+function openGoogleMaps(lat, lng, name) {
+  const origin = encodeURIComponent("ĐH Công nghệ Giao thông Vận tải cơ sở Vĩnh Phúc, Đồng Tâm, Vĩnh Yên");
+  const destination = encodeURIComponent(`${name}, Vĩnh Yên, Vĩnh Phúc`);
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  window.open(url, "_blank");
+}
+
 function renderCategoryPills() {
   const container = document.getElementById("category-pills");
   if (!container) return;
 
   const categories = [
     { id: "all", name: "Tất cả món", icon: "fa-solid fa-utensils" },
-    { id: "com", name: "Cơm sinh viên", icon: "fa-solid fa-bowl-rice" },
-    { id: "bun-pho", name: "Bún - Phở - Mì", icon: "fa-solid fa-bowl-food" },
-    { id: "an-vat", name: "Ăn vặt & Xiên que", icon: "fa-solid fa-hotdog" },
+    { id: "com", name: "Cơm & Món chính", icon: "fa-solid fa-bowl-rice" },
+    { id: "bun-pho", name: "Bún - Phở", icon: "fa-solid fa-bowl-food" },
+    { id: "an-vat", name: "Ăn vặt & Lẩu nướng", icon: "fa-solid fa-hotdog" },
     { id: "tra-sua", name: "Trà sữa & Cafe", icon: "fa-solid fa-mug-hot" }
   ];
 
@@ -297,20 +234,15 @@ function setCategory(catId) {
 
 function applyFiltersAndRender() {
   let filtered = [...restaurants];
-
   if (searchQuery.trim() !== "") {
     const q = searchQuery.toLowerCase().trim();
     filtered = filtered.filter(item => 
-      item.name.toLowerCase().includes(q) ||
-      item.address.toLowerCase().includes(q) ||
-      (item.signatureDishes && item.signatureDishes.some(d => d.toLowerCase().includes(q)))
+      item.name.toLowerCase().includes(q) || item.address.toLowerCase().includes(q)
     );
   }
-
   if (activeCategory !== "all") {
     filtered = filtered.filter(item => item.category === activeCategory);
   }
-
   renderRestaurantCards(filtered);
 }
 
@@ -328,58 +260,55 @@ function renderRestaurantCards(list) {
       <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-300">
         <i class="fa-solid fa-face-frown-open text-5xl text-orange-400 mb-3"></i>
         <h3 class="text-xl font-bold text-slate-800">Không tìm thấy quán ăn phù hợp</h3>
-        <p class="text-slate-500 text-sm mt-1">Hãy thử đổi từ khóa tìm kiếm nhé!</p>
       </div>
     `;
     return;
   }
 
-  grid.innerHTML = list.map(rest => {
-    const avgRating = calculateAverageRating(rest);
-
-    return `
-      <div id="restaurant-card-${rest.id}" class="food-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm flex flex-col">
-        <div class="relative h-48 overflow-hidden group cursor-pointer" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')">
-          <img src="${rest.coverImage}" alt="${rest.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
-          <div class="absolute top-3 left-3 bg-white/95 px-2.5 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-location-dot text-orange-500"></i> ${rest.distanceText}
-          </div>
-          <div class="absolute top-3 right-3 bg-orange-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">
-            ${rest.categoryLabel}
-          </div>
+  grid.innerHTML = list.map(rest => `
+    <div class="food-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm flex flex-col">
+      <!-- Ảnh quán: Đã thêm min-height để không bị đè chữ -->
+      <div class="relative h-48 min-h-[12rem] overflow-hidden group cursor-pointer" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')">
+        <img src="${rest.coverImage}" alt="${rest.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+        <div class="absolute top-3 left-3 bg-white/95 px-2.5 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-location-dot text-orange-500"></i> ${rest.distanceText}
         </div>
+        <div class="absolute top-3 right-3 bg-orange-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
+          ${rest.categoryLabel}
+        </div>
+      </div>
 
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-lg text-slate-900 leading-snug hover:text-orange-600 cursor-pointer transition-colors" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')">
-              ${rest.name}
-            </h3>
-            <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
-              <i class="fa-solid fa-map-pin text-slate-400"></i> ${rest.address}
-            </p>
-            <div class="mt-3.5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
-              <div>
-                <span class="text-xs text-slate-400 block">Khoảng giá</span>
-                <span class="text-sm font-extrabold text-orange-600">${rest.priceRange}</span>
-              </div>
-              <div class="text-right">
-                <div class="flex items-center text-amber-500 gap-1 text-sm font-black justify-end">
-                  <i class="fa-solid fa-star"></i>
-                  <span>${avgRating}</span>
-                </div>
+      <div class="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <!-- Tên quán: Đã tối ưu chiều cao hiển thị và line-clamp tránh tràn -->
+          <h3 class="font-bold text-base md:text-lg text-slate-900 leading-snug line-clamp-2 hover:text-orange-600 cursor-pointer transition-colors" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')" title="${rest.name}">
+            ${rest.name}
+          </h3>
+          <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5 line-clamp-1">
+            <i class="fa-solid fa-map-pin text-slate-400 flex-shrink-0"></i> ${rest.address}
+          </p>
+          <div class="mt-3.5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+            <div>
+              <span class="text-xs text-slate-400 block">Khoảng giá</span>
+              <span class="text-sm font-extrabold text-orange-600">${rest.priceRange}</span>
+            </div>
+            <div class="text-right">
+              <div class="flex items-center text-amber-500 gap-1 text-sm font-black justify-end">
+                <i class="fa-solid fa-star"></i>
+                <span>5.0</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="mt-5 pt-3 grid grid-cols-1 gap-2">
-            <button onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')" class="w-full py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold text-xs hover:bg-blue-100 transition-colors flex items-center justify-center gap-1.5">
-              <i class="fa-brands fa-google"></i> Xem đường đi từ trường UTT
-            </button>
-          </div>
+        <div class="mt-5 pt-3 grid grid-cols-1 gap-2">
+          <button onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')" class="w-full py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold text-xs hover:bg-blue-100 transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+            <i class="fa-brands fa-google text-blue-600"></i> Xem đường đi từ trường UTT
+          </button>
         </div>
       </div>
-    `;
-  }).join("");
+    </div>
+  `).join("");
 }
 
 function initEventListeners() {
