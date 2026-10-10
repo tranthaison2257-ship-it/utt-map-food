@@ -1,4 +1,5 @@
 (function () {
+  const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
   const { INITIAL_RESTAURANTS, UTT_LOCATION } = window.FoodZoneData;
   const categories = [
     { id: "all", name: "Tất cả món", icon: "fa-solid fa-utensils" },
@@ -55,9 +56,13 @@
             "fa-circle-check text-emerald-400"
       } text-lg`;
     }
+    toast.classList.remove("hidden");
     toast.classList.add("show");
     window.clearTimeout(showToast.timeout);
-    showToast.timeout = window.setTimeout(() => toast.classList.remove("show"), 3200);
+    showToast.timeout = window.setTimeout(() => {
+      toast.classList.remove("show");
+      toast.classList.add("hidden");
+    }, 3200);
   }
 
   function renderCategoryPills() {
@@ -241,7 +246,7 @@
     const qrStatus = document.getElementById("share-qr-status");
     const nativeShareButton = document.getElementById("btn-native-share");
     const nfcButton = document.getElementById("btn-write-nfc");
-    const url = window.location.href;
+    const url = SHARE_URL;
 
     if (!modal || !urlInput || !qrContainer || !qrStatus) return;
 
@@ -343,7 +348,7 @@
         await navigator.share({
           title: document.title,
           text: "Xem các quán ăn quanh UTT Vĩnh Phúc",
-          url: window.location.href
+          url: SHARE_URL
         });
       } catch (error) {
         if (error.name !== "AbortError") {
@@ -361,7 +366,7 @@
       try {
         const writer = new window.NDEFReader();
         await writer.write({
-          records: [{ recordType: "url", data: window.location.href }]
+          records: [{ recordType: "url", data: SHARE_URL }]
         });
         showToast("Đã ghi liên kết vào thẻ NFC. Chạm thẻ bằng điện thoại khác để mở.");
       } catch (error) {
