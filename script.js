@@ -350,6 +350,14 @@ function initInteractiveLeafletMap() {
   }
 }
 
+/**
+ * Mở Google Maps trên tab mới - chỉ đường thẳng đến quán ăn
+ */
+function openGoogleMaps(lat, lng, name) {
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&center=${lat},${lng}`;
+  window.open(url, "_blank");
+}
+
 function addRestaurantMarkersToMap() {
   if (!leafletMap) return;
 
@@ -384,6 +392,9 @@ function addRestaurantMarkersToMap() {
         <p style="font-size:0.75rem; color:#64748b; margin-top:4px;">
           <i class="fa-solid fa-location-dot"></i> ${rest.distanceText}
         </p>
+        <button class="popup-btn" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, '')}')" style="background:linear-gradient(135deg,#1a73e8,#0d47a1); margin-bottom:6px;">
+          <i class="fa-brands fa-google"></i> Xem trên Google Maps
+        </button>
         <button class="popup-btn" onclick="openRestaurantModal(${rest.id})">
           <i class="fa-solid fa-eye"></i> Xem chi tiết & Đánh giá
         </button>
@@ -616,9 +627,9 @@ function renderRestaurantCards(list) {
 
           <div class="mt-5 pt-3 grid grid-cols-2 gap-2">
             <button 
-              onclick="panToRestaurant(${rest.id})" 
-              class="w-full py-2.5 px-3 rounded-xl border border-orange-200 bg-orange-50 text-orange-700 font-semibold text-xs hover:bg-orange-100 transition-colors flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-map-location-dot"></i> Trên Map
+              onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, '')}')" 
+              class="w-full py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold text-xs hover:bg-blue-100 transition-colors flex items-center justify-center gap-1.5">
+              <i class="fa-brands fa-google"></i> Google Maps
             </button>
             <button 
               onclick="openRestaurantModal(${rest.id})" 
@@ -727,6 +738,15 @@ function openRestaurantModal(restaurantId) {
             </span>
           `).join("")}
         </div>
+
+        <!-- Nút mở Google Maps chỉ đường đến quán -->
+        <button
+          onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, '')}')"
+          class="mt-4 w-full py-3 px-4 rounded-2xl flex items-center justify-center gap-2.5 font-bold text-sm text-white transition-all hover:opacity-90 shadow-md"
+          style="background: linear-gradient(135deg, #1a73e8, #0d47a1);">
+          <i class="fa-brands fa-google text-lg"></i>
+          Mở Google Maps - Xem đường đi đến quán
+        </button>
       </div>
 
       <div class="border-t border-slate-200 pt-6">
