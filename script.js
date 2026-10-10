@@ -192,4 +192,202 @@ function calculateAverageRating(restaurant) {
 function openGoogleMaps(lat, lng, name) {
   // Điểm xuất phát cố định: Trường ĐH Công nghệ GTVT cơ sở Vĩnh Phúc
   const origin = encodeURIComponent("ĐH Công nghệ Giao thông Vận tải cơ sở Vĩnh Phúc, Đồng Tâm, Vĩnh Yên");
-  // Điểm đến: Tên quán + Tọa độ để
+  // Điểm đến: Tên quán + Tọa độ để định vị chính xác
+  const destination = encodeURIComponent(`${name}, Vĩnh Yên, Vĩnh Phúc`);
+  
+  // URL mở tính năng Chỉ Đường (Directions) của Google Maps
+  const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&destination_place_id=&travelmode=driving`;
+  
+  window.open(googleMapsDirectionsUrl, "_blank");
+}
+
+// 4. BẢN ĐỒ TƯƠNG TÁC TƯỢNG TRƯNG
+function initInteractiveLeafletMap() {
+  const container = document.getElementById("map-container");
+  if (!container) return;
+
+  if (typeof L === "undefined") {
+    setTimeout(initInteractiveLeafletMap, 300);
+    return;
+  }
+
+  if (leafletMap) {
+    leafletMap.remove();
+    leafletMap = null;
+  }
+
+  try {
+    leafletMap = L.map("map-container", {
+      center: [UTT_LOCATION.lat, UTT_LOCATION.lng],
+      zoom: 16,
+      zoomControl: true,
+      scrollWheelZoom: false
+    });
+
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; UTT Vĩnh Phúc'
+    }).addTo(leafletMap);
+
+    // Ghim vị trí Trường UTT Vĩnh Phúc
+    const schoolPinIcon = L.divIcon({
+      className: "custom-pin-school-wrapper",
+      html: `<div style="background:#2563eb; color:white; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3); border:2px solid white;"><i class="fa-solid fa-graduation-cap"></i></div>`,
+      iconSize: [38, 38],
+      iconAnchor: [19, 19]
+    });
+    L.marker([UTT_LOCATION.lat, UTT_LOCATION.lng], { icon: schoolPinIcon })
+      .addTo(leafletMap)
+      .bindPopup(`<b>${UTT_LOCATION.name}</b><br><small>${UTT_LOCATION.address}</small>`);
+
+    // Ghim vị trí các quán ăn
+    restaurants.forEach(rest => {
+      const foodPinIcon = L.divIcon({
+        className: "custom-pin-food-wrapper",
+        html: `<div style="background:#f97316; color:white; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.3); border:2px solid white;" title="${rest.name}"><i class="fa-solid fa-utensils text-xs"></i></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+
+      const marker = L.marker([rest.lat, rest.lng], { icon: foodPinIcon }).addTo(leafletMap);
+      
+      // Khi bấm vào ghim quán trên bản đồ -> Mở chỉ đường từ trường đến quán
+      marker.on("click", () => {
+        openGoogleMaps(rest.lat, rest.lng, rest.name);
+      });
+
+      mapMarkers.push(marker);
+    });
+
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
+
+  } catch (err) {
+    console.error("Lỗi khởi tạo bản đồ:", err);
+  }
+}
+
+// 5. RENDER CARDS VÀ BỘ LỌC
+function renderCategoryPills() {
+  const container = document.getElementById("category-pills");
+  if (!container) return;
+
+  const categories = [
+    { id: "all", name: "Tất cả món", icon: "fa-solid fa-utensils" },
+    { id: "com", name: "Cơm sinh viên", icon: "fa-solid fa-bowl-rice" },
+    { id: "bun-pho", name: "Bún - Phở - Mì", icon: "fa-solid fa-bowl-food" },
+    { id: "an-vat", name: "Ăn vặt & Xiên que", icon: "fa-solid fa-hotdog" },
+    { id: "tra-sua", name: "Trà sữa & Cafe", icon: "fa-solid fa-mug-hot" }
+  ];
+
+  container.innerHTML = categories.map(cat => `
+    <button 
+      class="cat-pill whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold border border-slate-200 transition-all flex items-center gap-2 ${activeCategory === cat.id ? 'active bg-orange-500 text-white' : 'bg-white text-slate-700 hover:border-orange-300'}"
+      onclick="setCategory('${cat.id}')">
+      <i class="${cat.icon}"></i>
+      <span>${cat.name}</span>
+    </button>
+  `).join("");
+}
+
+function setCategory(catId) {
+  activeCategory = catId;
+  renderCategoryPills();
+  applyFiltersAndRender();
+}
+
+function applyFiltersAndRender() {
+  let filtered = [...restaurants];
+
+  if (searchQuery.trim() !== "") {
+    const q = searchQuery.toLowerCase().trim();
+    filtered = filtered.filter(item => 
+      item.name.toLowerCase().includes(q) ||
+      item.address.toLowerCase().includes(q) ||
+      (item.signatureDishes && item.signatureDishes.some(d => d.toLowerCase().includes(q)))
+    );
+  }
+
+  if (activeCategory !== "all") {
+    filtered = filtered.filter(item => item.category === activeCategory);
+  }
+
+  renderRestaurantCards(filtered);
+}
+
+function renderRestaurantCards(list) {
+  const grid = document.getElementById("restaurant-grid");
+  const countLabel = document.getElementById("result-count");
+  if (!grid) return;
+
+  if (countLabel) {
+    countLabel.textContent = `Tìm thấy ${list.length} quán ăn gần trường UTT Vĩnh Phúc`;
+  }
+
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-300">
+        <i class="fa-solid fa-face-frown-open text-5xl text-orange-400 mb-3"></i>
+        <h3 class="text-xl font-bold text-slate-800">Không tìm thấy quán ăn phù hợp</h3>
+        <p class="text-slate-500 text-sm mt-1">Hãy thử đổi từ khóa tìm kiếm nhé!</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = list.map(rest => {
+    const avgRating = calculateAverageRating(rest);
+
+    return `
+      <div id="restaurant-card-${rest.id}" class="food-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm flex flex-col">
+        <div class="relative h-48 overflow-hidden group cursor-pointer" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')">
+          <img src="${rest.coverImage}" alt="${rest.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+          <div class="absolute top-3 left-3 bg-white/95 px-2.5 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-location-dot text-orange-500"></i> ${rest.distanceText}
+          </div>
+          <div class="absolute top-3 right-3 bg-orange-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full">
+            ${rest.categoryLabel}
+          </div>
+        </div>
+
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-lg text-slate-900 leading-snug hover:text-orange-600 cursor-pointer transition-colors" onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')">
+              ${rest.name}
+            </h3>
+            <p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-map-pin text-slate-400"></i> ${rest.address}
+            </p>
+            <div class="mt-3.5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 block">Khoảng giá</span>
+                <span class="text-sm font-extrabold text-orange-600">${rest.priceRange}</span>
+              </div>
+              <div class="text-right">
+                <div class="flex items-center text-amber-500 gap-1 text-sm font-black justify-end">
+                  <i class="fa-solid fa-star"></i>
+                  <span>${avgRating}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3 grid grid-cols-1 gap-2">
+            <button onclick="openGoogleMaps(${rest.lat}, ${rest.lng}, '${rest.name.replace(/'/g, "\\'")}')" class="w-full py-2.5 px-3 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold text-xs hover:bg-blue-100 transition-colors flex items-center justify-center gap-1.5">
+              <i class="fa-brands fa-google"></i> Xem đường đi từ trường UTT
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function initEventListeners() {
+  const searchInput = document.getElementById("search-input");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      applyFiltersAndRender();
+    });
+  }
+}
