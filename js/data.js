@@ -6,8 +6,8 @@
  */
 
 const UTT_LOCATION = {
-  lat: 21.31254,
-  lng: 105.58912,
+  lat: 21.292122,
+  lng: 105.5825717,
   name: "ĐH Công nghệ Giao thông Vận tải cơ sở Vĩnh Phúc",
   address: "Phường Đồng Tâm, TP. Vĩnh Yên, Tỉnh Vĩnh Phúc"
 };
@@ -50,7 +50,7 @@ const INITIAL_RESTAURANTS = [
   {
     id: 3,
     name: "Chạn Buffet Cơ Sở 2 - Vĩnh Yên",
-    category: "buffet",
+    category: "com",
     categoryLabel: "Buffet",
     priceRange: "200.000đ - 300.000đ",
     minPrice: 200000,
@@ -64,23 +64,23 @@ const INITIAL_RESTAURANTS = [
     coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/377ff2eaa2ae5a9041df421bb2f7933fe662f5f1/src/pics/nha-hang-chan.jpg?raw=true",
     signatureDishes: ["", "Buffet lẩu nướng"]
   },
-  //{
-  //   id: 4,
-  //   name: "Tiệm Trà Tuổi Trẻ & Trà Chanh Giã Tay",
-  //   category: "tra-sua",
-  //   categoryLabel: "Trà sữa & Đồ uống",
-  //   priceRange: "15.000đ - 30.000đ",
-  //   minPrice: 15000,
-  //   maxPrice: 30000,
-  //   distanceText: "250m từ UTT",
-  //   address: "Số 68 Phố Trần Phú kéo dài, P. Đồng Tâm, TP. Vĩnh Yên",
-  //   phone: "0963 124 555",
-  //   openHours: "08:00 - 23:00",
-  //   lat: 21.31150,
-  //   lng: 105.58720,
-  //   coverImage: "https://images.unsplash.com/photo-1558857563-b37cf5a894f5?auto=format&fit=crop&w=800&q=80",
-  //   signatureDishes: ["Trà chanh giã tay", "Trà sữa nướng trân châu"]
-  // },
+  {
+    id: 4,
+    name: "Chè thập cẩm",
+    category: "an-vat",
+    categoryLabel: "Các loại chè",
+    priceRange: "5.000đ - 20.000đ",
+    minPrice: 5000,
+    maxPrice: 20000,
+    distanceText: "10m từ cổng UTT",
+    address: "Bên phải cổng UTT",
+    phone: "",
+    openHours: "",
+    lat: 21.2926718,
+    lng: 105.5831167,
+    coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/c7ec653ff1d7593ce38fe41f5ee6f3c47a7f65fa/src/pics/che-thap-cam.jpg?raw=true",
+    signatureDishes: ["", "Chè thập cẩm"]
+  },
 
   // {
   //   id: 5,
