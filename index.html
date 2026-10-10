@@ -40,7 +40,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Leaflet CSS (Cloudflare CDN) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9XxREMImURUcPBhRIedxUmAn7EpRYh557C307/eaU/NJ1vSjEkhK2Uez656upcnua3vcgLD5W4842ce5c5TWg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
@@ -69,7 +69,7 @@
 
       <!-- Quick Action Buttons -->
       <div class="flex items-center gap-2">
-        <button onclick="shareWebLink()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+        <button id="btn-share-link" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 transition-colors">
           <i class="fa-solid fa-share-nodes"></i>
           <span class="hidden sm:inline">Gửi link cho bạn</span>
         </button>
@@ -147,21 +147,20 @@
           </p>
         </div>
 
-        <!-- Các nút chuyển đổi chế độ bản đồ -->
+        <!-- Chọn kiểu bản đồ từ popup -->
         <div class="flex items-center gap-2 flex-wrap">
-          <div class="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200">
-            <button 
-              id="btn-mode-interactive" 
-              onclick="switchMapMode('interactive')" 
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-orange-500 text-white shadow-xs">
-              <i class="fa-solid fa-map mr-1"></i> Esri World Street Map
+          <div id="map-style-selector" class="map-style-selector">
+            <button
+              id="btn-select-map"
+              type="button"
+              class="map-style-trigger"
+              aria-expanded="false"
+              aria-controls="map-style-options">
+              <i id="selected-map-icon" class="fa-solid fa-map" aria-hidden="true"></i>
+              <span id="selected-map-label">Chọn bản đồ</span>
+              <i class="fa-solid fa-chevron-down map-style-chevron" aria-hidden="true"></i>
             </button>
-            <button 
-              id="btn-mode-google" 
-              onclick="switchMapMode('google')" 
-              class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:text-orange-600">
-              <i class="fa-brands fa-google text-red-500 mr-1"></i> Google Maps Trực quan
-            </button>
+            <div id="map-style-options" class="map-style-menu hidden" role="group" aria-label="Các kiểu bản đồ"></div>
           </div>
 
           <button 
@@ -170,12 +169,19 @@
             <i class="fa-solid fa-graduation-cap text-blue-600"></i>
             <span>Về cổng UTT</span>
           </button>
+          <button 
+            id="btn-locate-me" 
+            type="button"
+            class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold border border-emerald-200 transition-colors flex items-center gap-1.5">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <span>Vị trí tôi</span>
+          </button>
         </div>
       </div>
 
       <!-- Khung chứa bản đồ -->
       <div class="mt-4 relative rounded-2xl overflow-hidden border border-slate-200 shadow-inner bg-slate-50">
-        <!-- Chế độ 1: Bản đồ Esri World Street Map Pins -->
+        <!-- Chế độ Leaflet: lớp nền được chọn bằng nhóm nút phía trên -->
         <div id="map-container"></div>
 
         <!-- Chế độ 2: Google Maps Embed chính thức UTT Vĩnh Phúc -->
@@ -258,9 +264,9 @@
     <!-- Số lượng kết quả -->
     <div class="mt-4 flex items-center justify-between text-xs text-slate-500 font-medium px-2">
       <span id="result-count">Đang tải danh sách quán...</span>
-      <span class="text-orange-600 font-semibold cursor-pointer hover:underline" onclick="resetFilters()">
+      <button type="button" data-action="reset-filters" class="text-orange-600 font-semibold cursor-pointer hover:underline">
         <i class="fa-solid fa-rotate-right mr-1"></i> Đặt lại bộ lọc
-      </span>
+      </button>
     </div>
   </section>
 
@@ -278,6 +284,39 @@
     <div class="modal-card bg-white w-full max-w-3xl max-h-[92vh] rounded-3xl shadow-2xl overflow-y-auto relative">
       <div id="modal-dynamic-content"></div>
     </div>
+  </div>
+
+  <!-- Share link dialog -->
+  <div id="share-modal" class="share-modal hidden" aria-hidden="true">
+    <section class="share-dialog" role="dialog" aria-modal="true" aria-labelledby="share-title">
+      <button id="btn-close-share" class="share-close" type="button" aria-label="Đóng">×</button>
+      <div class="share-heading">
+        <span class="share-heading-icon"><i class="fa-solid fa-share-nodes"></i></span>
+        <div>
+          <h2 id="share-title">Chia sẻ UTT FoodZone</h2>
+          <p>Quét mã QR hoặc gửi liên kết cho bạn bè.</p>
+        </div>
+      </div>
+      <div id="share-qr" class="share-qr" aria-label="Mã QR liên kết website"></div>
+      <p id="share-qr-status" class="share-qr-status" role="status">Đang tạo mã QR...</p>
+      <div class="share-link-row">
+        <input id="share-url" type="text" readonly aria-label="Liên kết website">
+        <button id="btn-copy-share-link" type="button" class="share-action share-action-secondary">
+          <i class="fa-regular fa-copy"></i> Sao chép
+        </button>
+      </div>
+      <div class="share-actions">
+        <button id="btn-native-share" type="button" class="share-action share-action-primary">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i> Chia sẻ...
+        </button>
+        <button id="btn-write-nfc" type="button" class="share-action share-action-secondary hidden">
+          <i class="fa-solid fa-wifi"></i> Ghi vào thẻ NFC
+        </button>
+      </div>
+      <p id="share-nfc-note" class="share-note">
+        Hỗ trợ NFC trên một số thiết bị.
+      </p>
+    </section>
   </div>
 
   <!-- ========================================================================= -->
@@ -308,23 +347,12 @@
     </div>
   </footer>
 
-  <!-- Leaflet JS & App Script -->
+  <!-- Leaflet JS & FoodZone modules (load order matters for classic scripts) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" crossorigin="anonymous"></script>
-  <script src="script.js"></script>
-
-  <!-- Share link helper -->
-  <script>
-    function shareWebLink() {
-      const currentUrl = window.location.href;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(currentUrl).then(() => {
-          showToast("🔗 Đã sao chép link web! Bạn có thể dán gửi cho bạn bè ngay.");
-        });
-      } else {
-        prompt("Copy đường link này để gửi cho bạn bè:", currentUrl);
-      }
-    }
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" referrerpolicy="no-referrer"></script>
+  <script src="js/data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>
