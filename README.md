@@ -21,7 +21,7 @@ Bất kỳ ai trên máy tính khác hoặc điện thoại di động (4G/5G, W
 2. **Responsive 100%:** Hoạt động mượt mà trên cả máy tính (PC) lẫn điện thoại di động.
 3. **Danh sách thẻ quán ăn:** Lọc theo món ăn, tầm giá sinh viên (<25k, 25k-40k), sắp xếp theo khoảng cách gần trường nhất.
 4. **Tra cứu nhanh:** Tìm theo tên quán, địa chỉ hoặc món nổi bật; lọc khoảng giá và loại món; sắp xếp theo khoảng cách hoặc giá.
-5. **Chia sẻ:** Tạo QR ngay trên trang, sao chép link hoặc mở bảng chia sẻ của điện thoại. Trên một số Android hỗ trợ Web NFC có thể ghi link vào thẻ NFC; trang web không thể tạo thao tác chạm trực tiếp điện thoại-với-điện thoại như AirDrop.
+5. **Chia sẻ:** Tạo QR, sao chép link hoặc dùng Web Share API để mở bảng chia sẻ của điện thoại; chọn Quick Share (Android) hoặc AirDrop (iPhone) nếu có. Trên một số Android dùng Chrome ở HTTPS, Web NFC có thể ghi/đọc thẻ NFC rời, nhưng không biến điện thoại thành thẻ để chia sẻ bằng cách chạm hai máy.
 
 ---
 

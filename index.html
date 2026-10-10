@@ -309,12 +309,22 @@
         <button id="btn-native-share" type="button" class="share-action share-action-primary">
           <i class="fa-solid fa-arrow-up-from-bracket"></i> Chia sẻ...
         </button>
+      </div>
+      <div class="share-actions">
         <button id="btn-write-nfc" type="button" class="share-action share-action-secondary hidden">
           <i class="fa-solid fa-wifi"></i> Ghi vào thẻ NFC
         </button>
+        <button id="btn-read-nfc" type="button" class="share-action share-action-secondary hidden">
+          <i class="fa-solid fa-mobile-screen-button"></i> Quét thẻ NFC
+        </button>
       </div>
+      <p id="nfc-scan-status" class="share-qr-status" role="status" aria-live="polite"></p>
+      <a id="nfc-scan-link" class="share-action share-action-primary hidden"
+        target="_blank" rel="noopener noreferrer">
+        Mở liên kết đọc được
+      </a>
       <p id="share-nfc-note" class="share-note">
-        Hỗ trợ NFC trên một số thiết bị.
+        Nhấn “Chia sẻ...” rồi chọn Quick Share (Android) hoặc AirDrop (iPhone) nếu thiết bị hỗ trợ. QR luôn dùng được; NFC trên web chỉ đọc/ghi thẻ NFC rời.
       </p>
     </section>
   </div>

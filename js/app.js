@@ -1,6 +1,15 @@
 (function () {
   const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
   const { INITIAL_RESTAURANTS, UTT_LOCATION } = window.FoodZoneData;
+  const NFC_URI_PREFIXES = [
+    "", "http://www.", "https://www.", "http://", "https://", "tel:",
+    "mailto:", "ftp://anonymous:anonymous@", "ftp://ftp.", "ftps://",
+    "sftp://", "smb://", "nfs://", "ftp://", "dav://", "news:",
+    "telnet://", "imap:", "rtsp://", "urn:", "pop:", "sip:", "sips:",
+    "tftp:", "btspp://", "btl2cap://", "btgoep://", "tcpobex://",
+    "irdaobex://", "file://", "urn:epc:id:", "urn:epc:tag:",
+    "urn:epc:pat:", "urn:epc:raw:", "urn:epc:", "urn:nfc:"
+  ];
   const categories = [
     { id: "all", name: "Tất cả món", icon: "fa-solid fa-utensils" },
     { id: "com", name: "Cơm & Món chính", icon: "fa-solid fa-bowl-rice" },
@@ -13,6 +22,41 @@
   let activeCategory = "all";
   let searchQuery = "";
   let activeOrigin = [UTT_LOCATION.lat, UTT_LOCATION.lng];
+  let nfcScanController = null;
+
+  function getNfcUrl(message) {
+    for (const record of message.records) {
+      if (record.recordType !== "url" || !record.data) continue;
+
+      const payload = new Uint8Array(
+        record.data.buffer,
+        record.data.byteOffset,
+        record.data.byteLength
+      );
+      if (payload.length === 0) continue;
+
+      const decodedUrl =
+        (NFC_URI_PREFIXES[payload[0]] ?? "") + new TextDecoder().decode(payload.subarray(1));
+      try {
+        const url = new URL(decodedUrl);
+        if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+      } catch (error) {
+        console.warn("Thẻ NFC chứa liên kết không hợp lệ:", error);
+      }
+    }
+
+    return null;
+  }
+
+  function stopNfcScan() {
+    nfcScanController?.abort();
+    nfcScanController = null;
+    const button = document.getElementById("btn-read-nfc");
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = '<i class="fa-solid fa-mobile-screen-button"></i> Quét thẻ NFC';
+    }
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -246,6 +290,7 @@
     const qrStatus = document.getElementById("share-qr-status");
     const nativeShareButton = document.getElementById("btn-native-share");
     const nfcButton = document.getElementById("btn-write-nfc");
+    const nfcReadButton = document.getElementById("btn-read-nfc");
     const url = SHARE_URL;
 
     if (!modal || !urlInput || !qrContainer || !qrStatus) return;
@@ -254,10 +299,12 @@
     modal.classList.remove("hidden");
     modal.setAttribute("aria-hidden", "false");
     nativeShareButton?.classList.toggle("hidden", typeof navigator.share !== "function");
-    nfcButton?.classList.toggle(
-      "hidden",
-      !window.isSecureContext || typeof window.NDEFReader !== "function"
-    );
+    const supportsWebNfc =
+      window.isSecureContext && typeof window.NDEFReader === "function";
+    nfcButton?.classList.toggle("hidden", !supportsWebNfc);
+    nfcReadButton?.classList.toggle("hidden", !supportsWebNfc);
+    document.getElementById("nfc-scan-status").textContent = "";
+    document.getElementById("nfc-scan-link").classList.add("hidden");
     qrContainer.replaceChildren();
 
     if (typeof window.QRCode !== "function") {
@@ -289,6 +336,7 @@
   function closeShareDialog() {
     const modal = document.getElementById("share-modal");
     if (!modal) return;
+    stopNfcScan();
     modal.classList.add("hidden");
     modal.setAttribute("aria-hidden", "true");
   }
@@ -372,6 +420,50 @@
       } catch (error) {
         console.error("Không thể ghi thẻ NFC:", error);
         showToast("Không ghi được NFC. Hãy kiểm tra NFC, quyền trình duyệt và thẻ trống.", "error");
+      }
+    });
+    document.getElementById("btn-read-nfc")?.addEventListener("click", async event => {
+      if (!window.isSecureContext || typeof window.NDEFReader !== "function") {
+        showToast("Thiết bị hoặc trình duyệt này không hỗ trợ quét NFC từ web.", "error");
+        return;
+      }
+
+      stopNfcScan();
+      const controller = new AbortController();
+      nfcScanController = controller;
+      const button = event.currentTarget;
+      const status = document.getElementById("nfc-scan-status");
+      const link = document.getElementById("nfc-scan-link");
+      link.classList.add("hidden");
+      status.textContent = "Đang chờ thẻ NFC. Hãy đưa thẻ lại gần mặt lưng điện thoại.";
+      button.disabled = true;
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang quét...';
+
+      try {
+        const reader = new window.NDEFReader();
+        reader.onreading = readingEvent => {
+          const scannedUrl = getNfcUrl(readingEvent.message);
+          if (!scannedUrl) {
+            status.textContent = "Thẻ này không chứa liên kết HTTP hoặc HTTPS. Hãy thử thẻ khác.";
+            return;
+          }
+
+          link.href = scannedUrl;
+          link.classList.remove("hidden");
+          status.textContent = "Đã đọc được liên kết từ thẻ NFC.";
+          stopNfcScan();
+        };
+        reader.onreadingerror = () => {
+          status.textContent = "Không đọc được thẻ NFC. Hãy giữ thẻ gần điện thoại và thử lại.";
+        };
+        await reader.scan({ signal: controller.signal });
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Không thể bắt đầu quét thẻ NFC:", error);
+          status.textContent = "Không thể quét NFC. Hãy kiểm tra NFC, quyền trình duyệt và thử lại.";
+          showToast("Không thể bắt đầu quét NFC trên thiết bị này.", "error");
+        }
+        stopNfcScan();
       }
     });
     document.querySelector("[data-action='reset-filters']")?.addEventListener("click", resetFilters);
