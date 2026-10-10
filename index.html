@@ -68,7 +68,7 @@
       </a>
 
       <!-- Quick Action Buttons -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 top_right">
         <button id="btn-share-link" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 transition-colors">
           <i class="fa-solid fa-share-nodes"></i>
           <span class="hidden sm:inline">Gửi link cho bạn</span>
@@ -89,8 +89,8 @@
   <!-- ========================================================================= -->
   <!-- 2. HERO BANNER SECTION -->
   <!-- ========================================================================= -->
-  <section class="relative bg-gradient-to-b from-orange-50/80 via-amber-50/40 to-transparent pt-8 pb-12 px-4 sm:px-6 lg:px-8 border-b border-orange-100/60">
-    <div class="max-w-7xl mx-auto text-center space-y-4">
+  <section id="hero-banner" class="hero-banner relative bg-gradient-to-b from-orange-50/80 via-amber-50/40 to-transparent px-4 sm:px-6 lg:px-8 border-b border-orange-100/60">
+    <div id="hero-content" class="hero-content max-w-7xl mx-auto text-center space-y-4">
       
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-orange-200 text-orange-700 text-xs font-bold shadow-xs">
         <i class="fa-solid fa-graduation-cap text-orange-500"></i>
@@ -121,6 +121,13 @@
         </div>
       </div>
 
+    </div>
+    <div class="hero-toggle-row">
+      <button id="btn-toggle-hero" type="button" class="hero-toggle"
+        aria-label="Thu gọn phần giới thiệu" aria-controls="hero-content" aria-expanded="true"
+        title="Thu gọn phần giới thiệu">
+        <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+      </button>
     </div>
   </section>
 

@@ -1,6 +1,7 @@
 (function () {
   const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
   const SAVED_RESTAURANTS_KEY = "utt-foodzone-saved-restaurants";
+  const HERO_COLLAPSED_KEY = "utt-foodzone-hero-collapsed";
   const { INITIAL_RESTAURANTS, UTT_LOCATION } = window.FoodZoneData;
   const NFC_URI_PREFIXES = [
     "", "http://www.", "https://www.", "http://", "https://", "tel:",
@@ -363,12 +364,16 @@
   function pickRandomRestaurant() {
     const choices = getFilteredRestaurants();
     if (choices.length === 0) {
+      selectedRandomRestaurant = null;
+      document.getElementById("random-emoji").textContent = "🍜";
       document.getElementById("random-name").textContent = "Chưa có quán phù hợp";
       document.getElementById("random-category").textContent =
         "Hãy đổi bộ lọc hoặc tắt chế độ chỉ xem quán đã lưu rồi thử lại.";
       document.getElementById("random-price").textContent = "";
       document.getElementById("random-address").textContent = "";
       document.getElementById("random-status").textContent = "Không tìm thấy quán để quay.";
+      document.getElementById("btn-random-show-map").classList.add("hidden");
+      document.getElementById("btn-random-show-card").classList.add("hidden");
       return;
     }
 
@@ -561,11 +566,56 @@
   function resetFilters() {
     activeCategory = "all";
     searchQuery = "";
+    showSavedRestaurantsOnly = false;
     document.getElementById("search-input").value = "";
     document.getElementById("price-filter").value = "all";
     document.getElementById("sort-filter").value = "distance-asc";
+    updateSavedRestaurantsButton();
     renderCategoryPills();
     applyFiltersAndRender();
+  }
+
+  function setHeroCollapsed(isCollapsed) {
+    const section = document.getElementById("hero-banner");
+    const button = document.getElementById("btn-toggle-hero");
+    const icon = button?.querySelector("i");
+    if (!section || !button || !icon) return;
+
+    section.classList.toggle("is-collapsed", isCollapsed);
+    const label = isCollapsed ? "Hiện phần giới thiệu" : "Thu gọn phần giới thiệu";
+    button.setAttribute("aria-expanded", String(!isCollapsed));
+    button.setAttribute("aria-label", label);
+    button.title = label;
+    icon.className = `fa-solid fa-chevron-${isCollapsed ? "down" : "up"}`;
+  }
+
+  function loadHeroPreference() {
+    try {
+      const savedState = localStorage.getItem(HERO_COLLAPSED_KEY);
+      if (savedState === "true" || savedState === "false") {
+        setHeroCollapsed(savedState === "true");
+      } else if (savedState !== null) {
+        console.warn("Trạng thái thu gọn phần giới thiệu không hợp lệ:", savedState);
+      }
+    } catch (error) {
+      console.warn("Không thể đọc trạng thái phần giới thiệu từ localStorage:", error);
+      showToast("Không thể khôi phục trạng thái phần giới thiệu đã lưu.", "error");
+    }
+  }
+
+  function toggleHero() {
+    const section = document.getElementById("hero-banner");
+    if (!section) return;
+
+    const shouldCollapse = !section.classList.contains("is-collapsed");
+    try {
+      localStorage.setItem(HERO_COLLAPSED_KEY, String(shouldCollapse));
+    } catch (error) {
+      console.error("Không thể lưu trạng thái phần giới thiệu:", error);
+      showToast("Không lưu được trạng thái thu gọn vào trình duyệt.", "error");
+      return;
+    }
+    setHeroCollapsed(shouldCollapse);
   }
 
   function openShareDialog() {
@@ -627,6 +677,7 @@
   }
 
   function initialize() {
+    loadHeroPreference();
     window.FoodZoneMap.initialize();
     loadSavedRestaurants();
     renderCategoryPills();
@@ -670,6 +721,7 @@
     document.getElementById("btn-spin-random")?.addEventListener("click", pickRandomRestaurant);
     document.getElementById("btn-random-show-map")?.addEventListener("click", handleRandomDialogAction);
     document.getElementById("btn-random-show-card")?.addEventListener("click", handleRandomDialogAction);
+    document.getElementById("btn-toggle-hero")?.addEventListener("click", toggleHero);
     document.getElementById("btn-share-link")?.addEventListener("click", openShareDialog);
     document.getElementById("btn-close-share")?.addEventListener("click", closeShareDialog);
     document.getElementById("share-modal")?.addEventListener("click", event => {

@@ -19,12 +19,13 @@ Bất kỳ ai trên máy tính khác hoặc điện thoại di động (4G/5G, W
    - **Google Maps:** bản đồ nhúng để tra cứu trực quan.
    - Có nút về UTT, định vị GPS và mở chỉ đường.
 2. **Responsive 100%:** Hoạt động mượt mà trên cả máy tính (PC) lẫn điện thoại di động.
-3. **Danh sách thẻ quán ăn:** Lọc theo món ăn, tầm giá sinh viên (<25k, 25k-40k), sắp xếp theo khoảng cách gần trường nhất.
-4. **Tra cứu nhanh:** Tìm theo tên quán, địa chỉ hoặc món nổi bật; lọc khoảng giá và loại món; sắp xếp theo khoảng cách hoặc giá.
-5. **Lưu quán yêu thích:** Nhấn biểu tượng trái tim trên thẻ để lưu quán vào `localStorage` của trình duyệt; nút “Đã lưu” lọc riêng danh sách này trên cùng thiết bị và trình duyệt.
-6. **Chọn quán ngẫu nhiên:** Nút “Ăn gì?” mở cửa sổ quay và chọn một quán trong danh sách hiện đang phù hợp với bộ lọc.
-7. **Trợ lý chat:** Gợi ý quán theo danh mục và dữ liệu có trên trang; câu trả lời chạy cục bộ theo từ khóa, không gọi dịch vụ AI bên ngoài.
-8. **Chia sẻ:** Tạo QR, sao chép link hoặc dùng Web Share API để mở bảng chia sẻ của điện thoại; chọn Quick Share (Android) hoặc AirDrop (iPhone) nếu có. Trên một số Android dùng Chrome ở HTTPS, Web NFC có thể ghi/đọc thẻ NFC rời, nhưng không biến điện thoại thành thẻ để chia sẻ bằng cách chạm hai máy.
+3. **Hero thu gọn/mở rộng:** Nút mũi tên ở cuối phần giới thiệu cho phép ẩn hoặc hiện nhanh banner; trạng thái được lưu trên `localStorage` để dùng lại ở lần truy cập sau trên cùng trình duyệt.
+4. **Danh sách thẻ quán ăn:** Lọc theo món ăn, tầm giá sinh viên (<25k, 25k-40k), sắp xếp theo khoảng cách gần trường nhất.
+5. **Tra cứu nhanh:** Tìm theo tên quán, địa chỉ hoặc món nổi bật; lọc khoảng giá và loại món; sắp xếp theo khoảng cách hoặc giá.
+6. **Lưu quán yêu thích:** Nhấn biểu tượng trái tim trên thẻ để lưu quán vào `localStorage` của trình duyệt; nút “Đã lưu” lọc riêng danh sách này trên cùng thiết bị và trình duyệt.
+7. **Chọn quán ngẫu nhiên:** Nút “Ăn gì?” mở cửa sổ quay và chọn một quán trong danh sách hiện đang phù hợp với bộ lọc.
+8. **Trợ lý chat:** Gợi ý quán theo danh mục và dữ liệu có trên trang; câu trả lời chạy cục bộ theo từ khóa, không gọi dịch vụ AI bên ngoài.
+9. **Chia sẻ:** Tạo QR, sao chép link hoặc dùng Web Share API để mở bảng chia sẻ của điện thoại; chọn Quick Share (Android) hoặc AirDrop (iPhone) nếu có. Trên một số Android dùng Chrome ở HTTPS, Web NFC có thể ghi/đọc thẻ NFC rời, nhưng không biến điện thoại thành thẻ để chia sẻ bằng cách chạm hai máy.
 
 ### Gửi đề xuất quán mới
 

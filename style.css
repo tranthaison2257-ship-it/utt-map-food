@@ -72,6 +72,57 @@ body {
   box-shadow: 0 20px 25px -5px rgba(249, 115, 22, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
 }
 
+.hero-content {
+  max-height: 440px;
+  overflow: hidden;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    max-height 0.4s ease,
+    padding 0.4s ease,
+    opacity 0.25s ease,
+    transform 0.4s ease;
+}
+.hero-banner.is-collapsed .hero-content {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(-0.75rem);
+}
+.hero-banner.is-collapsed + #map-section {
+  margin-top: 0;
+}
+.hero-toggle-row {
+  display: flex;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+}
+.hero-toggle {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid #fed7aa;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #c2410c;
+  box-shadow: 0 2px 8px rgba(124, 45, 18, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+.hero-toggle:hover {
+  transform: translateY(2px);
+  background: #ea580c;
+  color: #fff;
+}
+.hero-banner.is-collapsed .hero-toggle:hover {
+  transform: translateY(-2px);
+}
+
 /* Định dạng container Bản đồ */
 #map-container {
   height: 480px;
@@ -98,7 +149,11 @@ body {
     min-height: 380px;
   }
 }
-
+@media screen and (max-width: 585px) {
+  .top_right a {
+    display: none;
+  }
+}
 /* Map style selector */
 .map-style-selector {
   position: relative;
@@ -853,7 +908,9 @@ body {
   #toast-notification,
   .random-pop,
   .chat-window,
-  .chat-toggle {
+  .chat-toggle,
+  .hero-content,
+  .hero-toggle {
     transition: none;
     animation: none;
   }
