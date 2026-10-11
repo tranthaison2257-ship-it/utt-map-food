@@ -241,7 +241,7 @@
         <div class="md:col-span-3">
           <select 
             id="price-filter" 
-            class="w-full px-3 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-700 font-medium">
+            class="foodzone-select w-full px-3 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-700 font-medium">
             <option value="all">💰 Khoảng giá: Tất cả mức giá</option>
             <option value="under-25">Dưới 25.000đ (Siêu rẻ)</option>
             <option value="25-40">25.000đ - 40.000đ (Chuẩn sinh viên)</option>
@@ -253,7 +253,7 @@
         <div class="md:col-span-3">
           <select 
             id="sort-filter" 
-            class="w-full px-3 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-700 font-medium">
+            class="foodzone-select w-full px-3 py-2.5 text-sm bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-700 font-medium">
             <option value="distance-asc">📍 Gần trường UTT nhất</option>
             <option value="rating-desc">⭐ Đánh giá cao nhất (Stars)</option>
             <option value="price-asc">💵 Giá từ thấp đến cao</option>
@@ -283,16 +283,15 @@
     <!-- Số lượng kết quả -->
     <div class="mt-4 flex flex-col items-start gap-2 text-xs text-slate-500 font-medium px-2 sm:flex-row sm:items-center sm:justify-between">
       <span id="result-count">Đang tải danh sách quán...</span>
-      <!-- <div class="flex items-center gap-4">
-        <a href="https://github.com/tranthaison2257-ship-it/utt-map-food/issues/new?template=suggest-restaurant.yml"
-          target="_blank" rel="noopener noreferrer"
+      <div class="flex items-center gap-4">
+        <button id="btn-open-add-restaurant" type="button" aria-haspopup="dialog"
           class="text-emerald-700 font-semibold hover:underline">
           <i class="fa-solid fa-circle-plus mr-1"></i> Gửi quán mới
-        </a>
+        </button>
         <button type="button" data-action="reset-filters" class="text-orange-600 font-semibold cursor-pointer hover:underline">
           <i class="fa-solid fa-rotate-right mr-1"></i> Đặt lại bộ lọc
         </button>
-      </div> -->
+      </div>
     </div>
   </section>
 
@@ -384,6 +383,102 @@
         </button>
       </div>
       <p id="random-status" class="random-status" role="status"></p>
+    </section>
+  </div>
+
+  <div id="add-restaurant-modal" class="add-restaurant-modal hidden" aria-hidden="true">
+    <section class="add-restaurant-dialog" role="dialog" aria-modal="true"
+      aria-labelledby="add-restaurant-title">
+      <button id="btn-close-add-restaurant" class="share-close" type="button" aria-label="Đóng">×</button>
+      <div class="share-heading">
+        <span class="share-heading-icon"><i class="fa-solid fa-store"></i></span>
+        <div>
+          <h2 id="add-restaurant-title">Thêm quán ăn mới</h2>
+          <p>Gửi thông tin để quản trị viên kiểm tra trước khi cập nhật website.</p>
+        </div>
+      </div>
+
+      <form id="admin-code-form" class="admin-code-form">
+        <label for="restaurant-admin-code">Mã truy cập</label>
+        <div class="admin-code-row">
+          <input id="restaurant-admin-code" type="password" autocomplete="current-password"
+            placeholder="Nhập mã truy cập" required>
+          <button type="submit" class="share-action share-action-primary">Xác nhận</button>
+        </div>
+        <!-- <p class="add-restaurant-security-note">
+          Mã này chỉ khóa giao diện; người xem mã nguồn trang vẫn có thể tìm thấy mã. Không dùng làm bảo mật thực.
+        </p> -->
+        <p id="restaurant-admin-status" class="add-restaurant-status" role="status"></p>
+      </form>
+
+      <form id="add-restaurant-form" class="add-restaurant-form hidden">
+        <fieldset id="add-restaurant-fields" disabled>
+          <div class="add-restaurant-fields">
+            <label>
+              Tên quán
+              <input name="name" type="text" placeholder="Ví dụ: Bún, cháo cô Lan" maxlength="120" required>
+            </label>
+            <label>
+              Category
+              <select name="category" class="foodzone-select" required>
+                <option value="" disabled selected>Chọn danh mục</option>
+                <option value="bun-pho">Bún & Phở</option>
+                <option value="com">Cơm & Món chính</option>
+                <option value="an-vat">Ăn vặt & Lẩu nướng</option>
+                <option value="tra-sua">Trà sữa & Đồ uống</option>
+              </select>
+            </label>
+            <label>
+              Category label
+              <input name="categoryLabel" type="text" placeholder="Ví dụ: Ăn sáng & Nhanh" maxlength="80" required>
+            </label>
+            <label>
+              Khoảng giá
+              <input name="priceRange" type="text" placeholder="Ví dụ: 10.000đ - 35.000đ" maxlength="80" required>
+            </label>
+            <label>
+              Giá nhỏ nhất (đ)
+              <input name="minPrice" type="number" min="0" step="1" placeholder="10000" required>
+            </label>
+            <label>
+              Giá lớn nhất (đ)
+              <input name="maxPrice" type="number" min="0" step="1" placeholder="35000" required>
+            </label>
+            <label class="add-restaurant-field-wide">
+              Địa chỉ
+              <input name="address" type="text" placeholder="Địa chỉ quán" maxlength="240">
+            </label>
+            <label>
+              Số điện thoại (không bắt buộc)
+              <input name="phone" type="tel" maxlength="32" placeholder="Số điện thoại">
+            </label>
+            <label class="add-restaurant-field-wide">
+              Link Google Maps
+              <input name="mapUrl" type="url" placeholder="Dán link chia sẻ Google Maps vào đây" maxlength="500" required>
+              <span class="restaurant-map-help">Hệ thống sẽ lấy vĩ độ và kinh độ từ link khi gửi đề xuất.</span>
+            </label>
+            <label class="add-restaurant-field-wide">
+              Món đặc trưng
+              <input name="signatureDishes" type="text" maxlength="240"
+                placeholder="Cách nhau bằng dấu phẩy: Bún, Cháo">
+            </label>
+          </div>
+
+          <div class="restaurant-image-upload-note">
+            <i class="fa-brands fa-google-drive" aria-hidden="true"></i>
+            <p>Ảnh quán không cần dán link. Hãy tải ảnh lên thư mục Drive, ghi tên quán vào tên file để quản trị viên đối chiếu.</p>
+            <a href="https://drive.google.com/drive/folders/1MYhwgpM2kCzjNLX-nYwengi29d_4KuIk?usp=sharing"
+              target="_blank" rel="noopener noreferrer">Mở thư mục Drive để gửi ảnh</a>
+          </div>
+          <p class="add-restaurant-security-note">
+            Mã này chỉ khóa giao diện. Không nhập mật khẩu cá nhân hoặc thông tin nhạy cảm.
+          </p>
+          <button id="btn-submit-add-restaurant" type="submit" class="share-action share-action-primary add-restaurant-submit">
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i> Gửi lên hệ thống chờ duyệt
+          </button>
+        </fieldset>
+        <p id="add-restaurant-status" class="add-restaurant-status" role="status" aria-live="polite"></p>
+      </form>
     </section>
   </div>
 

@@ -29,8 +29,58 @@ Bất kỳ ai trên máy tính khác hoặc điện thoại di động (4G/5G, W
 
 ### Gửi đề xuất quán mới
 
-Người dùng bấm **Gửi quán mới** để mở GitHub Issue Form và gửi tên, danh mục, địa chỉ, vị trí cùng khoảng giá. GitHub lưu đề xuất dưới dạng issue; dev kiểm tra thông tin trước khi cập nhật `INITIAL_RESTAURANTS` trong `js/data.js` và phát hành website. Đề xuất chưa được duyệt sẽ không tự xuất hiện trên web. Cách này không cần database hay API key trong trình duyệt; người gửi cần đăng nhập GitHub để tạo issue. Không nên để trình duyệt tự ghi thẳng vào mã nguồn vì sẽ phải nhúng thông tin xác thực bí mật vào mã client.
+Nút **Gửi quán mới** mở form; cần nhập mã truy cập trước khi các trường thông tin được mở. Form gửi đề xuất tới Google Apps Script để quản trị viên xem xét. Người gửi dán link Google Maps; Apps Script trích xuất và trả vĩ độ/kinh độ trong `extractedLat` và `extractedLng`. Nếu không tìm thấy tọa độ, Apps Script trả lỗi và không ghi đề xuất vào Google Docs. Hãy dùng phiên bản script mới nhất trong [`js/appscript.js`](./js/appscript.js) cho Apps Script; sau khi cập nhật code trong Google Apps Script, cần triển khai lại phiên bản Web app để endpoint áp dụng thay đổi. Người gửi ảnh tải trực tiếp lên thư mục Drive được liên kết trong form; không cần dán URL ảnh. Đề xuất chưa được duyệt sẽ không tự xuất hiện trên website. Mã truy cập được kiểm tra trong JavaScript phía trình duyệt nên chỉ giúp ẩn/khóa form trên giao diện, không phải cơ chế bảo mật; người xem mã nguồn có thể đọc được. Muốn bảo vệ thật, cần kiểm tra quyền ở Google Apps Script hoặc dùng xác thực phía máy chủ, tuyệt đối không nhúng mã bí mật vào client.
 
+### Cách tạo đề xuất:
+Bước 1: Tạo file Google Docs và Google Apps Script (Làm Backend)Bạn vào Google Docs tạo một file trắng (ví dụ: Danh sách chờ duyệt quán ăn).Nhìn lên thanh địa chỉ (URL) của file Docs, copy đoạn ID của file.(Ví dụ URL là: [https://docs.google.com/document/d/1A2B3C4D.../edit](https://docs.google.com/document/d/1A2B3C4D.../edit), thì ID là 1A2B3C4D...).Truy cập Google Apps Script và tạo một Dự án mới. **Lưu ý:** đoạn code mẫu bên dưới là phiên bản cũ, nhận `lat`/`lng` thủ công nên không dùng được với form Google Maps hiện tại. Để tự trích xuất tọa độ, Apps Script cần đọc `data.mapUrl`, gọi `extractLatLngFromUrl(data.mapUrl)` và trả `extractedLat`/`extractedLng` như trong script mới. Dán đoạn code mẫu sau vào:JavaScriptfunction doPost(e) {
+  try {
+    // Lấy dữ liệu từ Web gửi lên
+    var data = JSON.parse(e.postData.contents);
+    
+    // Tạo ID ngẫu nhiên (hoặc bạn có thể tự sửa lại sau)
+    var randomId = Math.floor(Math.random() * 1000) + 100; 
+
+    // Chuyển chuỗi món ăn thành mảng (ví dụ: "Bún, Cháo" -> ["Bún", "Cháo"])
+    var dishesArray = data.signatureDishes.split(',').map(function(item) {
+      return item.trim();
+    });
+
+    // Ép đúng định dạng bạn yêu cầu
+    var formattedString = `
+  {
+    id: ${randomId},
+    name: "${data.name}",
+    category: "${data.category}",
+    categoryLabel: "${data.categoryLabel}",
+    priceRange: "${data.priceRange}",
+    minPrice: ${data.minPrice},
+    maxPrice: ${data.maxPrice},
+    distanceText: "${data.distanceText || ""}",
+    address: "${data.address}",
+    phone: "${data.phone}",
+    openHours: "${data.openHours || ""}",
+    lat: ${data.lat},
+    lng: ${data.lng},
+    coverImage: "${data.coverImage}",
+    signatureDishes: ${JSON.stringify(dishesArray)}
+  },`;
+
+    // Mở file Docs bằng ID và ghi dữ liệu vào
+    var docId = 'DÁN_ID_GOOGLE_DOC_CỦA_BẠN_VÀO_ĐÂY'; 
+    var doc = DocumentApp.openById(docId);
+    
+    // Thêm nội dung và một đường kẻ ngang để ngăn cách các quán
+    doc.getBody().appendParagraph(formattedString);
+    doc.getBody().appendHorizontalRule();
+
+    // Trả về kết quả thành công cho Web
+    return ContentService.createTextOutput(JSON.stringify({"status": "success"})).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.message})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+Lưu và Triển khai (Deploy):Bấm vào nút Deploy (Triển khai) ở góc trên bên phải $\rightarrow$ New deployment (Triển khai mới).Chạm vào biểu tượng bánh răng $\rightarrow$ Chọn Web app (Ứng dụng web).Mục Who has access (Ai có quyền truy cập): Chọn Anyone (Bất kỳ ai).Bấm Deploy. Google sẽ yêu cầu bạn cấp quyền (bạn đăng nhập Gmail, chọn Nâng cao $\rightarrow$ Đi tới dự án).Cuối cùng, bạn sẽ nhận được một Web app URL. Hãy copy URL này.Bước 2: Tạo HTML Form trên trang web của bạn (Frontend)
 ---
 
 ## 🚀 Cách chạy cục bộ

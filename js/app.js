@@ -2,6 +2,9 @@
   const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
   const SAVED_RESTAURANTS_KEY = "utt-foodzone-saved-restaurants";
   const HERO_COLLAPSED_KEY = "utt-foodzone-hero-collapsed";
+  const RESTAURANT_SUBMISSION_URL =
+    "https://script.google.com/macros/s/AKfycbzc65vJSnKpRatD6e2uRgLnFPJ6mPytZtve8QvyizasITNXzT-n2p47kVCSR07-XmK-/exec";
+  const RESTAURANT_ACCESS_CODE = "SBTC";
   const { INITIAL_RESTAURANTS, UTT_LOCATION } = window.FoodZoneData;
   const NFC_URI_PREFIXES = [
     "", "http://www.", "https://www.", "http://", "https://", "tel:",
@@ -29,6 +32,7 @@
   let nfcScanController = null;
   let randomSpinTimer = null;
   let selectedRandomRestaurant = null;
+  let isRestaurantFormUnlocked = false;
 
   function getNfcUrl(message) {
     for (const record of message.records) {
@@ -676,6 +680,161 @@
     modal.setAttribute("aria-hidden", "true");
   }
 
+  function setRestaurantFormStatus(message, type = "") {
+    const status = document.getElementById("add-restaurant-status");
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("is-error", type === "error");
+    status.classList.toggle("is-success", type === "success");
+    status.classList.toggle("is-warning", type === "warning");
+  }
+
+  function resetRestaurantFormGate() {
+    isRestaurantFormUnlocked = false;
+    document.getElementById("admin-code-form")?.reset();
+    document.getElementById("admin-code-form")?.classList.remove("hidden");
+    document.getElementById("add-restaurant-form")?.reset();
+    document.getElementById("add-restaurant-form")?.classList.add("hidden");
+    const fieldset = document.getElementById("add-restaurant-fields");
+    if (fieldset) fieldset.disabled = true;
+    setRestaurantFormStatus("");
+    const adminStatus = document.getElementById("restaurant-admin-status");
+    if (adminStatus) {
+      adminStatus.textContent = "";
+      adminStatus.classList.remove("is-error", "is-success");
+    }
+  }
+
+  function openAddRestaurantDialog() {
+    const modal = document.getElementById("add-restaurant-modal");
+    if (!modal) return;
+    resetRestaurantFormGate();
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    document.getElementById("restaurant-admin-code")?.focus();
+  }
+
+  function closeAddRestaurantDialog() {
+    const modal = document.getElementById("add-restaurant-modal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+    resetRestaurantFormGate();
+  }
+
+  function unlockRestaurantForm(event) {
+    event.preventDefault();
+    const codeInput = document.getElementById("restaurant-admin-code");
+    const status = document.getElementById("restaurant-admin-status");
+    if (!codeInput || !status) return;
+
+    if (codeInput.value !== RESTAURANT_ACCESS_CODE) {
+      status.textContent = "Mã truy cập không đúng.";
+      status.classList.add("is-error");
+      status.classList.remove("is-success");
+      codeInput.select();
+      return;
+    }
+
+    isRestaurantFormUnlocked = true;
+    codeInput.value = "";
+    status.textContent = "";
+    document.getElementById("admin-code-form").classList.add("hidden");
+    document.getElementById("add-restaurant-fields").disabled = false;
+    document.getElementById("add-restaurant-form").classList.remove("hidden");
+    document.querySelector("#add-restaurant-fields input")?.focus();
+  }
+
+  async function submitRestaurantSuggestion(event) {
+    event.preventDefault();
+    if (!isRestaurantFormUnlocked) {
+      setRestaurantFormStatus("Hãy xác nhận mã truy cập trước khi nhập thông tin.", "error");
+      return;
+    }
+
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+
+    const formData = new FormData(form);
+    const minPrice = Number(formData.get("minPrice"));
+    const maxPrice = Number(formData.get("maxPrice"));
+    const mapUrl = String(formData.get("mapUrl")).trim();
+    if (minPrice > maxPrice) {
+      setRestaurantFormStatus("Giá nhỏ nhất không được lớn hơn giá lớn nhất.", "error");
+      return;
+    }
+
+    const submitButton = document.getElementById("btn-submit-add-restaurant");
+    if (!submitButton) return;
+    submitButton.disabled = true;
+    setRestaurantFormStatus("Đang gửi thông tin để chờ quản trị viên duyệt...");
+
+    const postData = {
+      name: String(formData.get("name")).trim(),
+      category: String(formData.get("category")).trim(),
+      categoryLabel: String(formData.get("categoryLabel")).trim(),
+      priceRange: String(formData.get("priceRange")).trim(),
+      minPrice,
+      maxPrice,
+      address: String(formData.get("address")).trim(),
+      phone: String(formData.get("phone")).trim(),
+      mapUrl,
+      coverImage: "",
+      signatureDishes: String(formData.get("signatureDishes")).trim(),
+      distanceText: "",
+      openHours: ""
+    };
+
+    try {
+      const response = await fetch(RESTAURANT_SUBMISSION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(postData)
+      });
+      if (!response.ok) {
+        throw new Error(`Máy chủ phản hồi HTTP ${response.status}.`);
+      }
+
+      const result = await response.json();
+      if (result.status === "error") {
+        throw new Error(
+          typeof result.message === "string"
+            ? result.message
+            : "Google Apps Script báo không thể xử lý đề xuất."
+        );
+      }
+      if (result.status !== "success") {
+        throw new Error("Hệ thống chưa xác nhận đã nhận đề xuất.");
+      }
+
+      const extractedLat = Number(result.extractedLat);
+      const extractedLng = Number(result.extractedLng);
+      const coordinatesFound = Number.isFinite(extractedLat) &&
+        Number.isFinite(extractedLng) && extractedLat !== 0;
+
+      form.reset();
+      if (coordinatesFound) {
+        setRestaurantFormStatus(
+          `Đã gửi đề xuất thành công và trích xuất tọa độ: Lat ${extractedLat}, Lng ${extractedLng}. Quán sẽ xuất hiện sau khi quản trị viên kiểm tra.`,
+          "success"
+        );
+      } else {
+        setRestaurantFormStatus(
+          "Đã gửi đề xuất nhưng không trích xuất được tọa độ từ link Google Maps. Quản trị viên cần bổ sung tọa độ trước khi đăng quán.",
+          "warning"
+        );
+      }
+    } catch (error) {
+      console.error("Không thể gửi đề xuất quán:", error);
+      setRestaurantFormStatus(
+        `Gửi chưa thành công: ${error instanceof Error ? error.message : "Lỗi không xác định."}`,
+        "error"
+      );
+    } finally {
+      submitButton.disabled = false;
+    }
+  }
+
   function initialize() {
     loadHeroPreference();
     window.FoodZoneMap.initialize();
@@ -731,6 +890,7 @@
       if (event.key === "Escape") {
         closeShareDialog();
         closeRandomDialog();
+        closeAddRestaurantDialog();
         toggleChat(false);
       }
     });
@@ -744,6 +904,13 @@
       const prompt = event.target.closest("[data-chat-prompt]");
       if (prompt) sendChatMessage(prompt.dataset.chatPrompt);
     });
+    document.getElementById("btn-open-add-restaurant")?.addEventListener("click", openAddRestaurantDialog);
+    document.getElementById("btn-close-add-restaurant")?.addEventListener("click", closeAddRestaurantDialog);
+    document.getElementById("add-restaurant-modal")?.addEventListener("click", event => {
+      if (event.target.id === "add-restaurant-modal") closeAddRestaurantDialog();
+    });
+    document.getElementById("admin-code-form")?.addEventListener("submit", unlockRestaurantForm);
+    document.getElementById("add-restaurant-form")?.addEventListener("submit", submitRestaurantSuggestion);
     appendChatMessage(
       "assistant",
       "Xin chào! Mình là trợ lý UTT FoodZone. Mình có thể gợi ý quán từ dữ liệu hiện có quanh trường."

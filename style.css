@@ -564,6 +564,169 @@ body {
   line-height: 1.5;
 }
 
+.add-restaurant-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1950;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(5px);
+}
+.add-restaurant-modal.hidden {
+  display: none;
+}
+.add-restaurant-dialog {
+  position: relative;
+  width: min(100%, 680px);
+  max-height: min(92vh, 820px);
+  overflow-y: auto;
+  padding: 1.5rem;
+  border: 1px solid #d1fae5;
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.3);
+}
+.admin-code-form {
+  margin-top: 1.25rem;
+}
+.admin-code-form > label,
+.add-restaurant-fields label {
+  display: grid;
+  gap: 0.35rem;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.admin-code-row {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.4rem;
+}
+.admin-code-row input,
+.add-restaurant-fields input,
+.add-restaurant-fields select {
+  min-width: 0;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-size: 0.8rem;
+}
+.foodzone-select {
+  appearance: none;
+  padding-right: 2.4rem !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7.5 5 5 5-5' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  cursor: pointer;
+}
+.foodzone-select:focus {
+  border-color: #f97316 !important;
+  outline: 2px solid rgba(249, 115, 22, 0.18) !important;
+}
+.foodzone-select option {
+  background-color: #fff;
+  color: #334155;
+}
+.add-restaurant-fields select {
+  min-height: 2.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+.admin-code-row input {
+  flex: 1;
+}
+.admin-code-row input:focus,
+.add-restaurant-fields input:focus {
+  border-color: #34d399;
+  outline: 2px solid rgba(52, 211, 153, 0.18);
+}
+.add-restaurant-form {
+  margin-top: 1rem;
+}
+.add-restaurant-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.add-restaurant-form fieldset:disabled {
+  display: none;
+}
+.add-restaurant-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.add-restaurant-field-wide {
+  grid-column: 1 / -1;
+}
+.restaurant-map-help {
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.restaurant-image-upload-note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 0.6rem;
+  align-items: start;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.9rem;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.75rem;
+}
+.restaurant-image-upload-note > i {
+  padding-top: 0.12rem;
+  font-size: 1rem;
+}
+.restaurant-image-upload-note p {
+  line-height: 1.5;
+}
+.restaurant-image-upload-note a {
+  grid-column: 2;
+  width: fit-content;
+  font-weight: 800;
+  text-decoration: underline;
+}
+.add-restaurant-security-note {
+  margin-top: 0.8rem;
+  color: #92400e;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+.add-restaurant-submit {
+  width: 100%;
+  margin-top: 0.8rem;
+}
+.add-restaurant-status {
+  min-height: 1.2rem;
+  margin-top: 0.45rem;
+  color: #64748b;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+.add-restaurant-status.is-error {
+  color: #b91c1c;
+}
+.add-restaurant-status.is-success {
+  color: #047857;
+}
+.add-restaurant-status.is-warning {
+  color: #a16207;
+}
+
 .random-modal {
   position: fixed;
   inset: 0;
@@ -913,5 +1076,17 @@ body {
   .hero-toggle {
     transition: none;
     animation: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .add-restaurant-dialog {
+    padding: 1.15rem;
+  }
+  .add-restaurant-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .add-restaurant-field-wide {
+    grid-column: auto;
   }
 }

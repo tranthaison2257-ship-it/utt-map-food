@@ -27,7 +27,7 @@ const INITIAL_RESTAURANTS = [
     openHours: "",
     lat: 21.292583,
     lng: 105.582722,
-    coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/377ff2eaa2ae5a9041df421bb2f7933fe662f5f1/src/pics/banh-cuon-nong-bun.jpg?raw=true",
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/banh-cuon-nong-bun.jpg?updatedAt=1791696577275",
     signatureDishes: ["Bánh cuốn", "Bún chả"]
   },
   {
@@ -44,7 +44,7 @@ const INITIAL_RESTAURANTS = [
     openHours: "",
     lat: 21.2937672,
     lng: 105.5834473,
-    coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/377ff2eaa2ae5a9041df421bb2f7933fe662f5f1/src/pics/pho-bo-ngoc-son.jpg?raw=true",
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/pho-bo-ngoc-son.jpg?updatedAt=1791696577234",
     signatureDishes: ["Phở bò", "Cơm rang dưa bò"]
   },
   {
@@ -61,7 +61,7 @@ const INITIAL_RESTAURANTS = [
     openHours: "",
     lat: 21.3110972,
     lng: 105.5704692,
-    coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/377ff2eaa2ae5a9041df421bb2f7933fe662f5f1/src/pics/nha-hang-chan.jpg?raw=true",
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/nha-hang-chan.jpg?updatedAt=1791696577256",
     signatureDishes: ["", "Buffet lẩu nướng"]
   },
   {
@@ -78,27 +78,27 @@ const INITIAL_RESTAURANTS = [
     openHours: "",
     lat: 21.2926718,
     lng: 105.5831167,
-    coverImage: "https://github.com/tranthaison2257-ship-it/utt-map-food/blob/c7ec653ff1d7593ce38fe41f5ee6f3c47a7f65fa/src/pics/che-thap-cam.jpg?raw=true",
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/che-thap-cam.jpg?updatedAt=1791696577245",
     signatureDishes: ["", "Chè thập cẩm"]
   },
 
-  // {
-  //   id: 5,
-  //   name: "Bánh Mì Chảo & Sốt Vang Sinh Viên",
-  //   category: "com",
-  //   categoryLabel: "Ăn sáng & Nhanh",
-  //   priceRange: "20.000đ - 35.000đ",
-  //   minPrice: 20000,
-  //   maxPrice: 35000,
-  //   distanceText: "200m từ UTT",
-  //   address: "Đường Lam Sơn, P. Đồng Tâm, TP. Vĩnh Yên",
-  //   phone: "0981 123 456",
-  //   openHours: "06:00 - 12:30",
-  //   lat: 21.31300,
-  //   lng: 105.58850,
-  //   coverImage: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80",
-  //   signatureDishes: ["Bánh mì chảo đầy đủ", "Bánh mì sốt vang đậm đà"]
-  // },
+  {
+    id: 5,
+    name: "Bún, cháo cô Lan",
+    category: "bun-pho",
+    categoryLabel: "Ăn sáng & Nhanh",
+    priceRange: "10.000đ - 35.000đ",
+    minPrice: 10000,
+    maxPrice: 35000,
+    distanceText: "",
+    address: "Đường Lam Sơn, P. Đồng Tâm, TP. Vĩnh Yên",
+    phone: "0828 295 780",
+    openHours: "",
+    lat: 21.293884,
+    lng: 105.5830563,
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/bun-chao-co-lan.jpg?updatedAt=1791696699169",
+    signatureDishes: ["Bún", "Cháo"]
+  },
   // {
   //   id: 6,
   //   name: "Lẩu Nướng Tự Chọn 99k Đồng Tâm",
