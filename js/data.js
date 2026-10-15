@@ -152,6 +152,24 @@ const INITIAL_RESTAURANTS = [
     signatureDishes: ["ăn vặt"]
   },
 
+  {
+    id: 9,
+    name: "Ăn vặt Hiền Nguyễn",
+    category: "an-vat",
+    categoryLabel: "Ăn Vặt - Ăn Sáng",
+    priceRange: "15 000- 50 000",
+    minPrice: 15000,
+    maxPrice: 50000,
+    distanceText: "",
+    address: "",
+    phone: "0814503333",
+    openHours: "",
+    lat: 21.2925595,
+    lng: 105.58297309999999,
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/hien-nguyen.png?updatedAt=1792050437717",
+    signatureDishes: ["Xôi Xéo Sườn","Bánh Mỳ Bơ"]
+  },
+
   // {
   //   id: 6,
   //   name: "Lẩu Nướng Tự Chọn 99k Đồng Tâm",
