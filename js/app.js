@@ -2,6 +2,7 @@
   const SHARE_URL = "https://tranthaison2257-ship-it.github.io/utt-map-food/";
   const SAVED_RESTAURANTS_KEY = "utt-foodzone-saved-restaurants";
   const HERO_COLLAPSED_KEY = "utt-foodzone-hero-collapsed";
+  const THEME_PREFERENCE_KEY = "utt-foodzone-theme";
   const RESTAURANT_SUBMISSION_URL =
     "https://script.google.com/macros/s/AKfycbzc65vJSnKpRatD6e2uRgLnFPJ6mPytZtve8QvyizasITNXzT-n2p47kVCSR07-XmK-/exec";
   const RESTAURANT_ACCESS_CODE = "SBTC";
@@ -117,6 +118,38 @@
       toast.classList.remove("show");
       toast.classList.add("hidden");
     }, 3200);
+  }
+
+  function setDarkMode(enabled, persist = false) {
+    const button = document.getElementById("btn-toggle-theme");
+    const icon = document.getElementById("theme-toggle-icon");
+    const label = document.getElementById("theme-toggle-label");
+    const action = enabled ? "Bật chế độ sáng" : "Bật chế độ tối";
+
+    document.body.classList.toggle("dark-mode", enabled);
+    button?.setAttribute("aria-pressed", String(enabled));
+    button?.setAttribute("aria-label", action);
+    button?.setAttribute("title", action);
+    if (icon) icon.className = `fa-solid ${enabled ? "fa-moon" : "fa-sun"}`;
+    if (label) label.textContent = enabled ? "Tối" : "Sáng";
+
+    if (persist) {
+      try {
+        window.localStorage.setItem(THEME_PREFERENCE_KEY, enabled ? "dark" : "light");
+      } catch (error) {
+        console.warn("Không thể lưu tùy chọn giao diện:", error);
+      }
+    }
+  }
+
+  function initializeTheme() {
+    let isDarkMode = false;
+    try {
+      isDarkMode = window.localStorage.getItem(THEME_PREFERENCE_KEY) === "dark";
+    } catch (error) {
+      console.warn("Không thể đọc tùy chọn giao diện đã lưu:", error);
+    }
+    setDarkMode(isDarkMode);
   }
 
   function renderCategoryPills() {
@@ -837,6 +870,7 @@
 
   function initialize() {
     loadHeroPreference();
+    initializeTheme();
     window.FoodZoneMap.initialize();
     loadSavedRestaurants();
     renderCategoryPills();
@@ -881,6 +915,9 @@
     document.getElementById("btn-random-show-map")?.addEventListener("click", handleRandomDialogAction);
     document.getElementById("btn-random-show-card")?.addEventListener("click", handleRandomDialogAction);
     document.getElementById("btn-toggle-hero")?.addEventListener("click", toggleHero);
+    document.getElementById("btn-toggle-theme")?.addEventListener("click", () => {
+      setDarkMode(!document.body.classList.contains("dark-mode"), true);
+    });
     document.getElementById("btn-share-link")?.addEventListener("click", openShareDialog);
     document.getElementById("btn-close-share")?.addEventListener("click", closeShareDialog);
     document.getElementById("share-modal")?.addEventListener("click", event => {

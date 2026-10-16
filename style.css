@@ -11,6 +11,15 @@
   --primary-amber: #f59e0b;
   --primary-dark: #1e293b;
   --bg-cream: #fffdfa;
+  --dark-page: #0f172a;
+  --dark-surface: #1e293b;
+  --dark-surface-raised: #273449;
+  --dark-surface-muted: #172235;
+  --dark-border: #334155;
+  --dark-text: #e2e8f0;
+  --dark-text-muted: #cbd5e1;
+  --dark-text-subtle: #94a3b8;
+  --dark-accent: #fb923c;
 }
 
 body {
@@ -49,6 +58,31 @@ body {
 
 .bg-gradient-warm {
   background: linear-gradient(180deg, #fff7ed 0%, #fffdfa 100%);
+}
+
+.theme-toggle-button {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #fed7aa;
+  border-radius: 0.75rem;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.theme-toggle-button:hover {
+  background: #ffedd5;
+}
+.theme-toggle-button:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
 }
 
 /* Star Rating (Interactive) */
@@ -1063,6 +1097,194 @@ body {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+/* Dark theme palette: adjust these tokens to customize the dark appearance. */
+body.dark-mode {
+  color-scheme: dark;
+  background-color: var(--dark-page) !important;
+  color: var(--dark-text);
+}
+body.dark-mode header,
+body.dark-mode [class~="bg-white"],
+body.dark-mode [class~="bg-white/95"],
+body.dark-mode [class~="bg-white/80"] {
+  background-color: var(--dark-surface) !important;
+}
+body.dark-mode [class~="bg-[#FFFDF9]"] {
+  background-color: var(--dark-page) !important;
+}
+body.dark-mode [class~="bg-slate-50"],
+body.dark-mode [class~="bg-slate-50/60"],
+body.dark-mode [class~="bg-slate-100"],
+body.dark-mode .chat-messages,
+body.dark-mode .chat-form input,
+body.dark-mode .share-link-row input,
+body.dark-mode .admin-code-row input,
+body.dark-mode .add-restaurant-fields input,
+body.dark-mode .add-restaurant-fields select {
+  background-color: var(--dark-surface-muted) !important;
+}
+body.dark-mode [class~="bg-orange-50"],
+body.dark-mode [class~="bg-orange-50/80"],
+body.dark-mode [class~="bg-orange-100"],
+body.dark-mode [class~="bg-amber-50"],
+body.dark-mode [class~="bg-amber-50/40"],
+body.dark-mode [class~="bg-amber-100"],
+body.dark-mode .bg-gradient-warm,
+body.dark-mode .random-result {
+  background: var(--dark-surface-raised) !important;
+}
+body.dark-mode [class~="bg-blue-50"],
+body.dark-mode [class~="bg-emerald-50"] {
+  background-color: var(--dark-surface-raised) !important;
+}
+body.dark-mode [class~="hover:bg-orange-50"]:hover,
+body.dark-mode [class~="hover:bg-orange-100"]:hover,
+body.dark-mode [class~="hover:bg-blue-100"]:hover,
+body.dark-mode [class~="hover:bg-slate-100/60"]:hover,
+body.dark-mode [class~="focus:bg-white"]:focus {
+  background-color: var(--dark-surface-muted) !important;
+}
+body.dark-mode [class~="text-slate-900"],
+body.dark-mode [class~="text-slate-800"],
+body.dark-mode [class~="text-slate-700"],
+body.dark-mode [class~="text-slate-600"] {
+  color: var(--dark-text) !important;
+}
+body.dark-mode [class~="text-slate-500"],
+body.dark-mode [class~="text-slate-400"],
+body.dark-mode .share-heading p,
+body.dark-mode .share-note,
+body.dark-mode .share-qr-status,
+body.dark-mode .random-heading p,
+body.dark-mode .random-status,
+body.dark-mode .random-category,
+body.dark-mode .random-address,
+body.dark-mode .restaurant-map-help,
+body.dark-mode .add-restaurant-status {
+  color: var(--dark-text-subtle) !important;
+}
+body.dark-mode [class~="border-slate-100"],
+body.dark-mode [class~="border-slate-200"],
+body.dark-mode [class~="border-slate-300"],
+body.dark-mode .share-link-row input,
+body.dark-mode .chat-window,
+body.dark-mode .chat-message-bubble,
+body.dark-mode .chat-composer,
+body.dark-mode .add-restaurant-dialog,
+body.dark-mode .share-dialog,
+body.dark-mode .random-dialog {
+  border-color: var(--dark-border) !important;
+}
+body.dark-mode .hero-banner {
+  background: linear-gradient(180deg, #1e293b 0%, #172235 65%, var(--dark-page) 100%);
+  border-color: var(--dark-border);
+}
+body.dark-mode .hero-toggle,
+body.dark-mode .map-style-trigger,
+body.dark-mode .map-style-menu,
+body.dark-mode .map-style-option,
+body.dark-mode .saved-filter-button,
+body.dark-mode .random-restaurant-button {
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface-raised);
+  color: var(--dark-text);
+}
+body.dark-mode .map-style-option:hover,
+body.dark-mode .map-style-option[aria-pressed="true"],
+body.dark-mode .map-style-trigger:hover,
+body.dark-mode .map-style-trigger[aria-expanded="true"] {
+  background-color: var(--dark-surface-muted);
+  color: var(--dark-accent);
+}
+body.dark-mode .theme-toggle-button {
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface-raised);
+  color: var(--dark-accent);
+}
+body.dark-mode .theme-toggle-button:hover {
+  background-color: var(--dark-surface-muted);
+}
+body.dark-mode .share-dialog,
+body.dark-mode .add-restaurant-dialog,
+body.dark-mode .random-dialog,
+body.dark-mode .chat-window {
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+}
+body.dark-mode .share-heading h2,
+body.dark-mode .random-heading h2,
+body.dark-mode .random-result h3,
+body.dark-mode .custom-map-popup h4 {
+  color: var(--dark-text);
+}
+body.dark-mode .share-close,
+body.dark-mode .chat-message-bubble,
+body.dark-mode .share-action-secondary {
+  background-color: var(--dark-surface-raised);
+  color: var(--dark-text-muted);
+}
+body.dark-mode .share-heading-icon,
+body.dark-mode .random-heading-icon {
+  background-color: var(--dark-surface-raised);
+  color: var(--dark-accent);
+}
+body.dark-mode .share-qr img,
+body.dark-mode .share-qr canvas {
+  border-color: var(--dark-surface-raised);
+}
+body.dark-mode .restaurant-image-upload-note {
+  border-color: var(--dark-border);
+  background: var(--dark-surface-raised);
+  color: var(--dark-text-muted);
+}
+body.dark-mode .admin-code-form > label,
+body.dark-mode .add-restaurant-fields label {
+  color: var(--dark-text-muted);
+}
+body.dark-mode .add-restaurant-security-note {
+  color: #fbbf24;
+}
+body.dark-mode .chat-shortcuts button {
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface-raised);
+  color: #d8b4fe;
+}
+body.dark-mode .chat-shortcuts button:hover {
+  background-color: var(--dark-surface-muted);
+}
+body.dark-mode .chat-form input,
+body.dark-mode .share-link-row input,
+body.dark-mode .admin-code-row input,
+body.dark-mode .add-restaurant-fields input,
+body.dark-mode .add-restaurant-fields select,
+body.dark-mode .foodzone-select {
+  border-color: var(--dark-border);
+  color: var(--dark-text);
+}
+body.dark-mode .foodzone-select option {
+  background-color: var(--dark-surface);
+  color: var(--dark-text);
+}
+body.dark-mode .leaflet-popup-content-wrapper,
+body.dark-mode .leaflet-popup-tip {
+  border-color: var(--dark-border);
+  background: var(--dark-surface);
+  color: var(--dark-text);
+}
+body.dark-mode .leaflet-container {
+  background: var(--dark-surface-muted);
+}
+body.dark-mode footer {
+  background-color: var(--dark-surface) !important;
+  color: var(--dark-text-muted);
+}
+body.dark-mode ::-webkit-scrollbar-track {
+  background: var(--dark-surface-muted);
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #475569;
 }
 
 @media (prefers-reduced-motion: reduce) {

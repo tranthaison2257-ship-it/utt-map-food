@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UTT FoodZone | Quán Ăn Sinh Viên UTT Vĩnh Phúc</title>
+  <title>UTT LogiMap | Quán Ăn Sinh Viên UTT Vĩnh Phúc</title>
   
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍜</text></svg>">
@@ -60,7 +60,7 @@
         </div>
         <div>
           <div class="flex items-center gap-1.5">
-            <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-orange-600 transition-colors">UTT Food<span class="text-orange-500">Zone</span></span>
+            <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-orange-600 transition-colors">UTT Logi<span class="text-orange-500">Map</span></span>
             <span class="bg-orange-100 text-orange-700 text-[10px] font-extrabold px-1.5 py-0.5 rounded uppercase">Vĩnh Phúc</span>
           </div>
           <p class="text-[11px] text-slate-500 font-medium">Ẩm thực quanh ĐH Công nghệ GTVT Vĩnh Yên</p>
@@ -69,6 +69,11 @@
 
       <!-- Quick Action Buttons -->
       <div class="flex items-center gap-2 top_right">
+        <button id="btn-toggle-theme" type="button" class="theme-toggle-button"
+          aria-label="Bật chế độ tối" aria-pressed="false" title="Bật chế độ tối">
+          <i id="theme-toggle-icon" class="fa-solid fa-moon" aria-hidden="true"></i>
+          <span id="theme-toggle-label" class="hidden sm:inline">Tối</span>
+        </button>
         <button id="btn-share-link" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 transition-colors">
           <i class="fa-solid fa-share-nodes"></i>
           <span class="hidden sm:inline">Gửi link cho bạn</span>
@@ -535,7 +540,7 @@
         <div class="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center text-white text-sm">
           <i class="fa-solid fa-utensils"></i>
         </div>
-        <span class="font-extrabold text-slate-800">UTT FoodZone Vĩnh Phúc</span>
+        <span class="font-extrabold text-slate-800">UTT LogiMap Vĩnh Phúc</span>
       </div>
       <p class="text-xs text-slate-500 max-w-xl mx-auto">
         Trang web phi lợi nhuận dành cho sinh viên Đại học Công nghệ Giao thông Vận tải (Cơ sở Đào tạo Vĩnh Phúc).<br> Địa chỉ: Phường Đồng Tâm, Thành phố Vĩnh Yên, Tỉnh Vĩnh Phúc.

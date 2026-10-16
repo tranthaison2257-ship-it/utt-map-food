@@ -157,7 +157,7 @@ const INITIAL_RESTAURANTS = [
     name: "Ăn vặt Hiền Nguyễn",
     category: "an-vat",
     categoryLabel: "Ăn Vặt - Ăn Sáng",
-    priceRange: "15 000- 50 000",
+    priceRange: "15 000- 50 000", 
     minPrice: 15000,
     maxPrice: 50000,
     distanceText: "",
@@ -168,6 +168,42 @@ const INITIAL_RESTAURANTS = [
     lng: 105.58297309999999,
     coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/hien-nguyen.png?updatedAt=1792050437717",
     signatureDishes: ["Xôi Xéo Sườn","Bánh Mỳ Bơ"]
+  },
+
+   {
+    id: 10,
+    name: "Ăn vặt Hiền Vy",
+    category: "bun-pho",
+    categoryLabel: "ăn vặt",
+    priceRange: "5000-35000",
+    minPrice: 5000,
+    maxPrice: 35000,
+    distanceText: "",
+    address: "trc cổng trg utt",
+    phone: "",
+    openHours: "",
+    lat: 21.2927704,
+    lng: 105.5830775,
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/an-vat-hien-vy.jpg?updatedAt=1792147349650",
+    signatureDishes: ["ăn vặt"]
+  },
+
+   {
+    id: 11,
+    name: "Quán chị Nhung",
+    category: "an-vat",
+    categoryLabel: "ăn vặt",
+    priceRange: "10000-35000",
+    minPrice: 10000,
+    maxPrice: 35000,
+    distanceText: "",
+    address: "trc cổng trg utt",
+    phone: "",
+    openHours: "",
+    lat: 21.2925155,
+    lng: 105.5825682,
+    coverImage: "https://ik.imagekit.io/ecuswwhei/utt-map-food/quan-chi-nhung.jpg?updatedAt=1792147349629",
+    signatureDishes: ["ăn vặt"]
   },
 
   // {

@@ -26,6 +26,7 @@ Bất kỳ ai trên máy tính khác hoặc điện thoại di động (4G/5G, W
 7. **Chọn quán ngẫu nhiên:** Nút “Ăn gì?” mở cửa sổ quay và chọn một quán trong danh sách hiện đang phù hợp với bộ lọc.
 8. **Trợ lý chat:** Gợi ý quán theo danh mục và dữ liệu có trên trang; câu trả lời chạy cục bộ theo từ khóa, không gọi dịch vụ AI bên ngoài.
 9. **Chia sẻ:** Tạo QR, sao chép link hoặc dùng Web Share API để mở bảng chia sẻ của điện thoại; chọn Quick Share (Android) hoặc AirDrop (iPhone) nếu có. Trên một số Android dùng Chrome ở HTTPS, Web NFC có thể ghi/đọc thẻ NFC rời, nhưng không biến điện thoại thành thẻ để chia sẻ bằng cách chạm hai máy.
+10. **Dark mode:** Nút cạnh nút chia sẻ chuyển giữa giao diện sáng/tối và lưu lựa chọn trên trình duyệt hiện tại.
 
 ### Gửi đề xuất quán mới
 
@@ -94,6 +95,10 @@ Lưu và Triển khai (Deploy):Bấm vào nút Deploy (Triển khai) ở góc tr
 - `js/data.js`: tọa độ UTT và dữ liệu quán tại Vĩnh Yên.
 - `js/map.js`: khởi tạo Leaflet, lớp nền, ghim, GPS và chuyển đổi Google Maps.
 - `js/app.js`: tìm kiếm, lọc, sắp xếp, hiển thị thẻ quán và liên kết các thao tác UI.
+
+### Tùy chỉnh màu dark mode
+
+Mở `style.css` và chỉnh các biến `--dark-*` trong `:root` để đổi màu nền trang, bề mặt, đường viền và chữ. Các quy tắc dark mode ở cuối file tham chiếu các biến này; có thể thêm biến mới tại `:root` rồi dùng trong các quy tắc `body.dark-mode` tương ứng. Lựa chọn giao diện được lưu bằng khóa `utt-foodzone-theme` trong `localStorage`.
 
 ### Đổi hoặc thêm kiểu nền bản đồ
 
